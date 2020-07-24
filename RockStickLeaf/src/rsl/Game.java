@@ -11,6 +11,7 @@ public class Game extends JFrame{
 	private static final long serialVersionUID = 1L;
 	public final int Y_RESOL = 1020, X_RESOL = 1920; //game screen dimensions
 	public String filepath; //where game data files are stored
+	public String savename; //name of savefile
 	public Draw draw;
 	public ArrayList<Controls> controls;
 	public ArrayList<Player> players;
@@ -21,8 +22,8 @@ public class Game extends JFrame{
 	
 	public Game(int playerNum) {
 		super("Rock Stick Leaf");
-		filepath = System.getProperty("user.home")+"\\Documents\\RockStickLeaf";
-		System.out.println(filepath);
+		savename = "Yeehaw";
+		filepath = System.getProperty("user.home")+"/Documents/RockStickLeaf/"+savename;
 		//engine classes
 		playerCount = playerNum;
 		players = new ArrayList<Player>();
@@ -52,18 +53,21 @@ public class Game extends JFrame{
 		pack();
 		
 		//game data
-		matchups = new MatchupLookup(this);
 		try {
 			createUnits();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		matchups = new MatchupLookup(this,new File(filepath+"/matchups.txt"));
+		System.out.println(matchups.victor(units.get("Rock"),units.get("Fire")).name());
 	}
 
 	private void createUnits() throws IOException { //builds all unit types from file
 		units = new HashMap<String,Unit>();
-		File b = new File(filepath+"\\yeehaw.txt");
+		File b = new File(filepath+"/recipes.txt");
+		b.getParentFile().mkdirs();
+		b.createNewFile();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(b),"UTF-8"));
 		String curr = reader.readLine();
 		while(curr!=null) { //add all units to hashmap
@@ -93,4 +97,6 @@ public class Game extends JFrame{
 			System.out.println();
 		}
 	}
+	
+	
 }

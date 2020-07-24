@@ -1,10 +1,57 @@
 package rsl;
 
+import java.io.*;
+import java.util.*;
+
 public class MatchupLookup {
 
-	Game game;
+	private Game game;
+	private Map<Matchup,Unit> table;
+	private File loadedData;
 	
-	public MatchupLookup(Game g) {
+	public MatchupLookup(Game g,File f) {
 		game = g;
+		loadedData = f;
+		try {
+			buildTable();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public Unit victor(Matchup m) {
+		return table.get(m);
+	}
+	public Unit victor(Unit a, Unit b) {
+		return victor(new Matchup(new Unit[] {a,b}));
+	}
+	
+	public void addResult(Matchup m, Unit victor) {
+		table.put(m,victor);
+	}
+	
+	public void buildTable() throws IOException {
+		table = new HashMap<Matchup,Unit>();
+		loadedData.getParentFile().mkdirs();
+		loadedData.createNewFile();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(loadedData),"UTF-8"));
+		String curr = reader.readLine();
+		while(curr!=null) { //add all units to hashmap
+			String[] contenders = curr.split(">|<");
+			Unit[] units = new Unit[contenders.length];
+			for(int i=0; i<contenders.length; i++) {
+				units[i] = game.units.get(contenders[i]);
+			}
+			Matchup m = new Matchup(units);
+			if(curr.contains(">")) {
+				addResult(m,units[0]);
+			}else if(curr.contains("<")) {
+				addResult(m,units[1]);
+			}
+			
+			curr = reader.readLine();
+		}
+		reader.close();
 	}
 }
