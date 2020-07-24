@@ -14,13 +14,18 @@ public class Recipe {
 		create(recipedata);
 	}
 	
+	public Integer numberOf(Unit u) {
+		if(!materials.containsKey(u))return 0;
+		return materials.get(u);
+	}
+	
 	private void create(String r) {
 		materials = new HashMap<Unit,Integer>();
 		if(r==null)return;
 		String[] components = r.split(","); //commas separate material units
 		for(int i=0; i<components.length; i++) {
 			String component = components[i];
-			Unit material; //material
+			Unit material; //unit
 			Integer quantity;//number required 
 			if(component.contains("*")) { //if quantity given, use it, otherwise use 1
 				material = game.units.get(component.split("\\*")[0]);

@@ -24,12 +24,26 @@ public class Game extends JFrame{
 		super("Rock Stick Leaf");
 		savename = "Yeehaw";
 		filepath = System.getProperty("user.home")+"/Documents/RockStickLeaf/"+savename;
+		//game data
+		try {
+			createUnits();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		matchups = new MatchupLookup(this,new File(filepath+"/matchups.txt"));
+		
 		//engine classes
 		playerCount = playerNum;
 		players = new ArrayList<Player>();
-		playerCount = 4;
-		for(int i=0; i<playerCount; i++)
-			players.add(new Player(this));
+		playerCount = 2;
+		Scanner b = new Scanner(System.in);
+		for(int i=0; i<playerCount; i++) {
+			System.out.println("Player "+i+": ");
+			String pname = b.nextLine();
+			players.add(new Player(this,pname,new File(filepath+"/inventory_"+pname+".txt")));
+		}
+		b.close();
 		draw = new Draw(this);
 		controls = new ArrayList<Controls>();
 		for(int i=0; i<players.size(); i++) {
@@ -52,15 +66,9 @@ public class Game extends JFrame{
 		add(draw);
 		pack();
 		
-		//game data
-		try {
-			createUnits();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		matchups = new MatchupLookup(this,new File(filepath+"/matchups.txt"));
-		System.out.println(matchups.victor(units.get("Rock"),units.get("Fire")).name());
+		//System.out.println(matchups.victor(units.get("Rock"),units.get("Fire")).name());
+		
+		System.out.println(players.get(1).canCraft(units.get("Fire")));
 	}
 
 	private void createUnits() throws IOException { //builds all unit types from file
@@ -79,7 +87,7 @@ public class Game extends JFrame{
 		while(uniter.hasNext()) { //create recipes for each unit
 			uniter.next().readRecipe();
 		}
-		printRecipes();
+		//printRecipes();
 		reader.close();
 	}
 	

@@ -7,11 +7,11 @@ public class MatchupLookup {
 
 	private Game game;
 	private Map<Matchup,Unit> table;
-	private File loadedData;
+	private File data;
 	
 	public MatchupLookup(Game g,File f) {
 		game = g;
-		loadedData = f;
+		data = f;
 		try {
 			buildTable();
 		} catch (IOException e) {
@@ -33,9 +33,9 @@ public class MatchupLookup {
 	
 	public void buildTable() throws IOException {
 		table = new HashMap<Matchup,Unit>();
-		loadedData.getParentFile().mkdirs();
-		loadedData.createNewFile();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(loadedData),"UTF-8"));
+		data.getParentFile().mkdirs();
+		data.createNewFile();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(data),"UTF-8"));
 		String curr = reader.readLine();
 		while(curr!=null) { //add all units to hashmap
 			String[] contenders = curr.split(">|<");
