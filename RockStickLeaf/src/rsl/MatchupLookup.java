@@ -29,16 +29,14 @@ public class MatchupLookup {
 	public Unit victor(Unit a, Unit b) {
 		return victor(new Matchup(new Unit[] {a,b}));
 	}
-	public void createMatch(Matchup m) {
+	public void createMatch(Matchup m) { //gets player input to determine winner
 		String c = "";
 		for(Unit u : m.contenders()) {
 			c+=u.name()+", ";
 		}
-		System.out.println("Winner between "+c);
-		Scanner b = new Scanner(System.in);
-		String w = b.nextLine();
+		System.out.println("Winner between "+c+"is:");
+		String w = game.getConsoleInput();
 		addResult(m,game.units.get(w));
-		b.close();
 	}
 	public void addResult(Matchup m, Unit victor) {
 		table.put(m,victor);

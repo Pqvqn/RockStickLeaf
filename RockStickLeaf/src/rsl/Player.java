@@ -23,13 +23,34 @@ public class Player {
 		}
 		return true;
 	}
+	
+	public void craft(Unit u) {
+		if(!canCraft(u))return;
+		Iterator<Unit> uniter = u.recipe.materials.keySet().iterator();
+		while(uniter.hasNext()) {
+			Unit b = uniter.next();
+			take(b,u.recipe.materials.get(b));
+		}
+		give(u);
+	}
+	
 	public boolean has(Unit u) {
+		if(u instanceof DefaultUnit)return true;
 		return inventory.numberOf(u)>0;
 	}
 	public void give(Unit u) {
-		inventory.addUnits(u,1);
+		give(u,1);
 	}
 	public void take(Unit u) {
-		inventory.addUnits(u,-1);
+		take(u,1);
+	}
+	public void give(Unit u,int quantity) {
+		inventory.addUnits(u,quantity);
+	}
+	public void take(Unit u,int quantity) {
+		give(u,-quantity);
+	}
+	public String toString() {
+		return name+"\n"+inventory.toString();
 	}
 }

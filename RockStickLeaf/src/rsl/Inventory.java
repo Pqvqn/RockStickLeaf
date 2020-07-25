@@ -51,4 +51,15 @@ public class Inventory {
 		}
 		reader.close();
 	}
+	
+	public String toString() {
+		Iterator<Unit> uniter = inventory.keySet().iterator();
+		String s = "";
+		while(uniter.hasNext()) {
+			Unit b = uniter.next();
+			if(inventory.get(b)>0)
+				s+=b.name()+"*"+inventory.get(b)+"\n";
+		}
+		return s;
+	}
 }
