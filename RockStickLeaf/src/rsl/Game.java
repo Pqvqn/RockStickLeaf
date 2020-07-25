@@ -36,7 +36,6 @@ public class Game extends JFrame{
 		//engine classes
 		playerCount = playerNum;
 		players = new ArrayList<Player>();
-		playerCount = 2;
 		Scanner b = new Scanner(System.in);
 		for(int i=0; i<playerCount; i++) {
 			System.out.println("Player "+i+": ");
@@ -68,9 +67,27 @@ public class Game extends JFrame{
 		
 		//System.out.println(matchups.victor(units.get("Rock"),units.get("Fire")).name());
 		
-		System.out.println(players.get(1).canCraft(units.get("Fire")));
+		//System.out.println(players.get(1).canCraft(units.get("Fire")));
+		System.out.println("DID: "+doMatch(players.get(0),units.get("Fire"),players.get(1),units.get("Torch")));
 	}
 
+	private boolean doMatch(Player p1, Unit u1, Player p2, Unit u2) { //returns if match is successful; carries match out if can
+		if(!(p1.has(u1) && p2.has(u2)))return false;
+		Matchup m = new Matchup(new Unit[] {u1,u2});
+		Unit losingUnit = (matchups.victor(m).equals(u1)) ? u2:u1;
+		Player winner = losingUnit.equals(u1)? p2:p1;
+		Player loser = losingUnit.equals(u1)? p1:p2;
+		doTransfer(winner,loser,losingUnit);
+		return true;
+	}
+	
+	private void doTransfer(Player winner, Player loser, Unit transfered) {
+		loser.take(transfered);
+		winner.give(transfered);
+		System.out.println(winner.name+" WIN");
+		
+	}
+	
 	private void createUnits() throws IOException { //builds all unit types from file
 		units = new HashMap<String,Unit>();
 		File b = new File(filepath+"/recipes.txt");

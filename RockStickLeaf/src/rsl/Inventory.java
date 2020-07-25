@@ -24,6 +24,10 @@ public class Inventory {
 		if(!inventory.containsKey(u))return 0;
 		return inventory.get(u);
 	}
+	public void addUnits(Unit u,int quantity) {
+		if(!inventory.containsKey(u))inventory.put(u,0);
+		inventory.put(u,inventory.get(u)+quantity);
+	}
 	
 	private void buildTable() throws IOException {
 		inventory = new HashMap<Unit,Integer>();

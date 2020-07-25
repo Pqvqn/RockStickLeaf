@@ -21,12 +21,25 @@ public class MatchupLookup {
 	}
 	
 	public Unit victor(Matchup m) {
+		if(!table.containsKey(m)) {
+			createMatch(m);
+		}
 		return table.get(m);
 	}
 	public Unit victor(Unit a, Unit b) {
 		return victor(new Matchup(new Unit[] {a,b}));
 	}
-	
+	public void createMatch(Matchup m) {
+		String c = "";
+		for(Unit u : m.contenders()) {
+			c+=u.name()+", ";
+		}
+		System.out.println("Winner between "+c);
+		Scanner b = new Scanner(System.in);
+		String w = b.nextLine();
+		addResult(m,game.units.get(w));
+		b.close();
+	}
 	public void addResult(Matchup m, Unit victor) {
 		table.put(m,victor);
 	}
