@@ -93,12 +93,20 @@ public class Game extends JFrame{
 
 	private boolean doMatch(Player p1, Unit u1, Player p2, Unit u2) { //returns if match is successful; carries match out if can
 		if(!(p1.has(u1) && p2.has(u2)))return false;
-		if(u1.equals(u2))return false;
+		if(u1.equals(u2)) {
+			doSwap(p1,p2,u1,u2);
+			return true;
+		}
 		Matchup m = new Matchup(new Unit[] {u1,u2});
-		Unit losingUnit = (matchups.victor(m).equals(u1)) ? u2:u1;
+		Unit winningUnit = matchups.victor(m);
+		if(winningUnit == null) {
+			doSwap(p1,p2,u1,u2);
+			return true;
+		}
+		Unit losingUnit = winningUnit.equals(u1) ? u2:u1;
 		Player winner = losingUnit.equals(u1)? p2:p1;
 		Player loser = losingUnit.equals(u1)? p1:p2;
-		doTransfer(winner,loser,matchups.victor(m),losingUnit);
+		doTransfer(winner,loser,winningUnit,losingUnit);
 		return true;
 	}
 	
@@ -114,6 +122,16 @@ public class Game extends JFrame{
 		System.out.println(loser);
 		System.out.println(winner.name+" WIN");
 		
+	}
+	
+	private void doSwap(Player p1, Player p2, Unit p1u, Unit p2u) {
+		if(!(p1u instanceof DefaultUnit))p1.take(p1u);
+		if(!(p2u instanceof DefaultUnit))p2.take(p2u);
+		p1.give(p2u);
+		p2.give(p1u);
+		System.out.println(p1);
+		System.out.println(p2);
+		System.out.println("TIE");
 	}
 	
 	private void createUnits() throws IOException { //builds all unit types from file

@@ -30,11 +30,7 @@ public class MatchupLookup {
 		return victor(new Matchup(new Unit[] {a,b}));
 	}
 	public void createMatch(Matchup m) { //gets player input to determine winner
-		String c = "";
-		for(Unit u : m.contenders()) {
-			c+=u.name+", ";
-		}
-		System.out.println("Winner between "+c+"is:");
+		System.out.println("Winner between of "+m+" is:");
 		String w = game.getConsoleInput();
 		addResult(m,game.units.get(w));
 	}
@@ -49,7 +45,7 @@ public class MatchupLookup {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(data),"UTF-8"));
 		String curr = reader.readLine();
 		while(curr!=null) { //add all units to hashmap
-			String[] contenders = curr.split(">|<");
+			String[] contenders = curr.split(">|<|=");
 			Unit[] units = new Unit[contenders.length];
 			for(int i=0; i<contenders.length; i++) {
 				units[i] = game.units.get(contenders[i]);
@@ -59,6 +55,8 @@ public class MatchupLookup {
 				addResult(m,units[0]);
 			}else if(curr.contains("<")) {
 				addResult(m,units[1]);
+			}else if(curr.contains("=")) {
+				addResult(m,null);
 			}
 			
 			curr = reader.readLine();
