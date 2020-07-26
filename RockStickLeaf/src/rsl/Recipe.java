@@ -39,8 +39,11 @@ public class Recipe {
 			stringToMap(components[1],materials);
 		}else {
 			String[] components = r.split(",");
-			for(int i=0; i<components.length; i++)
-				game.units.put(components[i],new DefaultUnit(game,components[i]));
+			for(int i=0; i<components.length; i++) {
+				DefaultUnit def = new DefaultUnit(game,components[i]);
+				game.units.put(components[i],def);
+				game.defaults.add(def);
+			}
 		}
 		Iterator<Unit> uniter = productsIterator();
 		while(uniter.hasNext()) {

@@ -4,8 +4,6 @@ import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
-
-
 public class Game extends JFrame{
 
 	private static final long serialVersionUID = 1L;
@@ -18,15 +16,18 @@ public class Game extends JFrame{
 	public int playerCount;
 	public MatchupLookup matchups;
 	public Map<String,Unit> units;
+	public ArrayList<DefaultUnit> defaults;
 	public Set<Recipe> recipes;
 	private Scanner s;
 	
 	public Game(int playerNum) {
 		super("Rock Stick Leaf");
 		s = new Scanner(System.in);
-		savename = "Yeehaw";
+		System.out.println("Save name: ");
+		savename = getConsoleInput();
 		filepath = System.getProperty("user.home")+"/Documents/RockStickLeaf/"+savename;
 		//game data
+		defaults = new ArrayList<DefaultUnit>();
 		try {
 			createUnits();
 		} catch (IOException e) {
@@ -68,7 +69,20 @@ public class Game extends JFrame{
 		//System.out.println(matchups.victor(units.get("Rock"),units.get("Fire")).name());
 		
 		//System.out.println(players.get(1).canCraft(units.get("Fire")));
-
+		while(defaults.isEmpty()) {
+			System.out.println("List default units: ");
+			String listu = getConsoleInput();
+			String[] components = listu.split(",");
+			for(int i=0; i<components.length; i++) {
+				DefaultUnit du = new DefaultUnit(this,components[i]);
+				defaults.add(du);
+				units.put(components[i],du);
+			}
+		}
+		String def = "";
+		for(DefaultUnit du : defaults)def+=", "+du.name;
+		System.out.println("Defaults are: "+def.substring(2));
+		
 		while(true) {
 			System.out.print(players.get(0).name +": ");
 			String p1c = getConsoleInput();

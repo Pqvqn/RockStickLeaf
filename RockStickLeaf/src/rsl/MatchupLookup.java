@@ -30,7 +30,7 @@ public class MatchupLookup {
 		return victor(new Matchup(new Unit[] {a,b}));
 	}
 	public void createMatch(Matchup m) { //gets player input to determine winner
-		System.out.println("Winner between of "+m+" is:");
+		System.out.println("Winner of "+m+" is:");
 		String w = game.getConsoleInput();
 		addResult(m,game.units.get(w));
 	}
