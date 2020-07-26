@@ -36,6 +36,7 @@ public class Player {
 			Unit b = uniter2.next();
 			give(b,r.products.get(b));
 		}
+		System.out.println("Successfully crafted");
 	}
 	
 	public boolean has(Unit u) {

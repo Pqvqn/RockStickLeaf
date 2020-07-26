@@ -73,57 +73,20 @@ public class Game extends JFrame{
 			System.out.print(players.get(0).name +": ");
 			String p1c = getConsoleInput();
 			while(p1c.substring(0,1).equals("#")) {
-				Unit craftu = units.get(p1c.substring(p1c.indexOf("#")+1));
-				Recipe craftr = null;
-				while(craftu==null) {
-					System.out.println("Recipe: ");
-					craftr = new Recipe(this,getConsoleInput());
-					craftu = units.get(p1c.substring(p1c.indexOf("#")+1));
-				}
-				while(craftr==null) {
-					System.out.println("Choose Recipe:");
-					for(int i=0; i<craftu.recipes.size(); i++) {
-						Recipe r = craftu.recipes.get(i);
-						System.out.println(i+": "+r);
-					}
-					try {
-						int ans = Integer.parseInt(getConsoleInput());
-						craftr = craftu.recipes.get(ans);
-					}catch (NumberFormatException e) {
-						
-					}
-				}
-				players.get(0).craft(craftr);
+				Recipe craftr = getRecipe(p1c);
+				if(craftr!=null)players.get(0).craft(craftr);
 				System.out.print(players.get(0).name +": ");
 				p1c = getConsoleInput();
 			}
 			System.out.print(players.get(1).name +": ");
 			String p2c = getConsoleInput();
 			while(p2c.substring(0,1).equals("#")) {
-				Unit craftu = units.get(p2c.substring(p2c.indexOf("#")+1));
-				Recipe craftr = null;
-				while(craftu==null) {
-					System.out.println("Recipe: ");
-					craftr = new Recipe(this,getConsoleInput());
-					craftu = units.get(p2c.substring(p2c.indexOf("#")+1));
-				}
-				while(craftr==null) {
-					System.out.println("Choose Recipe:");
-					for(int i=0; i<craftu.recipes.size(); i++) {
-						Recipe r = craftu.recipes.get(i);
-						System.out.println(i+": "+r);
-					}
-					try {
-						int ans = Integer.parseInt(getConsoleInput());
-						craftr = craftu.recipes.get(ans);
-					}catch (NumberFormatException e) {
-						
-					}
-				}
-				players.get(1).craft(craftr);
+				Recipe craftr = getRecipe(p2c);
+				if(craftr!=null)players.get(1).craft(craftr);
 				System.out.print(players.get(1).name +": ");
 				p2c = getConsoleInput();
 			}
+			
 			System.out.println("DID: "+doMatch(players.get(0),units.get(p1c),players.get(1),units.get(p2c)));
 		}
 	}
@@ -187,6 +150,38 @@ public class Game extends JFrame{
 	public String getConsoleInput() {
 		String st = s.nextLine();
 		return st;
+	}
+	
+	public Recipe getRecipe(String u) {
+		Unit craftu = units.get(u.substring(u.indexOf("#")+1));
+		Recipe craftr = null;
+		while(craftu==null) {
+			System.out.println("Recipe: ");
+			craftr = new Recipe(this,getConsoleInput());
+			craftu = units.get(u.substring(u.indexOf("#")+1));
+		}
+		while(craftr==null) {
+			System.out.println("Choose Recipe:\n0: Cancel\n1: New");
+			for(int i=0; i<craftu.recipes.size(); i++) {
+				Recipe r = craftu.recipes.get(i);
+				System.out.println((i+2)+": "+r);
+			}
+			try {
+				int ans = Integer.parseInt(getConsoleInput());
+				if(ans==0) {
+					return null;
+				}else if(ans==1) {
+					System.out.println("Recipe: ");
+					craftr = new Recipe(this,getConsoleInput());
+					return craftr;
+				}else {
+					craftr = craftu.recipes.get(ans-2);
+				}
+			}catch (NumberFormatException e) {
+				
+			}
+		}
+		return craftr;
 	}
 	
 }
