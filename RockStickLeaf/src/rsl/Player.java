@@ -15,23 +15,27 @@ public class Player {
 		name = playername;
 	}
 	
-	public boolean canCraft(Unit u) {
-		Iterator<Unit> uniter = u.recipe.materials.keySet().iterator();
+	public boolean canCraft(Recipe r) {
+		Iterator<Unit> uniter = r.materialsIterator();
 		while(uniter.hasNext()) {
 			Unit b = uniter.next();
-			if(inventory.numberOf(b)<u.recipe.numberOf(b))return false;
+			if(inventory.numberOf(b)<r.amountNeeded(b))return false;
 		}
 		return true;
 	}
 	
-	public void craft(Unit u) {
-		if(!canCraft(u))return;
-		Iterator<Unit> uniter = u.recipe.materials.keySet().iterator();
+	public void craft(Recipe r) {
+		if(!canCraft(r))return;
+		Iterator<Unit> uniter = r.materialsIterator();
 		while(uniter.hasNext()) {
 			Unit b = uniter.next();
-			take(b,u.recipe.materials.get(b));
+			take(b,r.materials.get(b));
 		}
-		give(u);
+		Iterator<Unit> uniter2 = r.productsIterator();
+		while(uniter2.hasNext()) {
+			Unit b = uniter2.next();
+			give(b,r.products.get(b));
+		}
 	}
 	
 	public boolean has(Unit u) {

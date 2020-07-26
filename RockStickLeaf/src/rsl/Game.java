@@ -18,6 +18,7 @@ public class Game extends JFrame{
 	public int playerCount;
 	public MatchupLookup matchups;
 	public Map<String,Unit> units;
+	public Set<Recipe> recipes;
 	private Scanner s;
 	
 	public Game(int playerNum) {
@@ -72,28 +73,54 @@ public class Game extends JFrame{
 			System.out.print(players.get(0).name +": ");
 			String p1c = getConsoleInput();
 			while(p1c.substring(0,1).equals("#")) {
-				Unit craft = units.get(p1c.substring(p1c.indexOf("#")+1));
-				if(craft==null) {
+				Unit craftu = units.get(p1c.substring(p1c.indexOf("#")+1));
+				Recipe craftr = null;
+				while(craftu==null) {
 					System.out.println("Recipe: ");
-					craft = new Unit(this,p1c.substring(p1c.indexOf("#")+1)+":"+getConsoleInput());
-					units.put(craft.name(),craft);
-					craft.readRecipe();
+					craftr = new Recipe(this,getConsoleInput());
+					craftu = units.get(p1c.substring(p1c.indexOf("#")+1));
 				}
-				players.get(0).craft(craft);
+				while(craftr==null) {
+					System.out.println("Choose Recipe:");
+					for(int i=0; i<craftu.recipes.size(); i++) {
+						Recipe r = craftu.recipes.get(i);
+						System.out.println(i+": "+r);
+					}
+					try {
+						int ans = Integer.parseInt(getConsoleInput());
+						craftr = craftu.recipes.get(ans);
+					}catch (NumberFormatException e) {
+						
+					}
+				}
+				players.get(0).craft(craftr);
 				System.out.print(players.get(0).name +": ");
 				p1c = getConsoleInput();
 			}
 			System.out.print(players.get(1).name +": ");
 			String p2c = getConsoleInput();
 			while(p2c.substring(0,1).equals("#")) {
-				Unit craft = units.get(p2c.substring(p2c.indexOf("#")+1));
-				if(craft==null) {
+				Unit craftu = units.get(p2c.substring(p2c.indexOf("#")+1));
+				Recipe craftr = null;
+				while(craftu==null) {
 					System.out.println("Recipe: ");
-					craft = new Unit(this,getConsoleInput());
-					units.put(craft.name(),craft);
-					craft.readRecipe();
+					craftr = new Recipe(this,getConsoleInput());
+					craftu = units.get(p2c.substring(p2c.indexOf("#")+1));
 				}
-				players.get(1).craft(craft);
+				while(craftr==null) {
+					System.out.println("Choose Recipe:");
+					for(int i=0; i<craftu.recipes.size(); i++) {
+						Recipe r = craftu.recipes.get(i);
+						System.out.println(i+": "+r);
+					}
+					try {
+						int ans = Integer.parseInt(getConsoleInput());
+						craftr = craftu.recipes.get(ans);
+					}catch (NumberFormatException e) {
+						
+					}
+				}
+				players.get(1).craft(craftr);
 				System.out.print(players.get(1).name +": ");
 				p2c = getConsoleInput();
 			}
@@ -128,38 +155,34 @@ public class Game extends JFrame{
 	
 	private void createUnits() throws IOException { //builds all unit types from file
 		units = new HashMap<String,Unit>();
+		recipes = new HashSet<Recipe>();
 		File b = new File(filepath+"/recipes.txt");
 		b.getParentFile().mkdirs();
 		b.createNewFile();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(b),"UTF-8"));
 		String curr = reader.readLine();
 		while(curr!=null) { //add all units to hashmap
-			Unit u = curr.contains("#")?new DefaultUnit(this,curr):new Unit(this,curr);
-			units.put(u.name(),u);
+			recipes.add(new Recipe(this,curr));
 			curr = reader.readLine();
-		}
-		Iterator<Unit> uniter = units.values().iterator();
-		while(uniter.hasNext()) { //create recipes for each unit
-			uniter.next().readRecipe();
 		}
 		//printRecipes();
 		reader.close();
 	}
 	
-	private void printRecipes() { //prints out all recipes to console
+	/*private void printRecipes() { //prints out all recipes to console
 		Iterator<Unit> uniter = units.values().iterator();
 		while(uniter.hasNext()) {
 			Unit u = uniter.next();
 			Recipe recipe = u.recipe;
 			System.out.print(u.name());
-			Iterator<Unit> b = recipe.materials.keySet().iterator();
+			Iterator<Unit> b = recipe.materialsIterator();
 			while(b.hasNext()) {
 				Unit c = b.next();
 				System.out.print(" : "+c.name()+" x "+recipe.materials.get(c));
 			}
 			System.out.println();
 		}
-	}
+	}*/
 	
 	public String getConsoleInput() {
 		String st = s.nextLine();

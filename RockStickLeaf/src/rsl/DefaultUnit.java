@@ -6,7 +6,4 @@ public class DefaultUnit extends Unit{
 		super(g,unitdata);
 	}
 	
-	public void readRecipe() {
-		recipe = new Recipe(game,this,null);
-	}
 }

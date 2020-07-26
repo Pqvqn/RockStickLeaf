@@ -28,10 +28,10 @@ public class Matchup {
 	
 	@Override
 	public int hashCode() {//overrides hashcode
-		if(units[0].name().compareTo(units[1].name()) >= 0) {
-			return(units[0].name()+"#"+units[1].name()).hashCode();
+		if(units[0].name.compareTo(units[1].name) >= 0) {
+			return(units[0].name+"#"+units[1].name).hashCode();
 		}else {
-			return(units[1].name()+"#"+units[0].name()).hashCode();
+			return(units[1].name+"#"+units[0].name).hashCode();
 		}
 	}
 	
@@ -45,7 +45,7 @@ public class Matchup {
 	public String toString() {
 		String match = "";
 		for(Unit u : units) {
-			match+=u.name()+" vs ";
+			match+=u.name+" vs ";
 		}
 		match = match.substring(0,match.length()-4);
 		return match;

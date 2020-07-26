@@ -32,7 +32,7 @@ public class MatchupLookup {
 	public void createMatch(Matchup m) { //gets player input to determine winner
 		String c = "";
 		for(Unit u : m.contenders()) {
-			c+=u.name()+", ";
+			c+=u.name+", ";
 		}
 		System.out.println("Winner between "+c+"is:");
 		String w = game.getConsoleInput();

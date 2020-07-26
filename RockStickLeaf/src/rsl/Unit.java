@@ -1,21 +1,18 @@
 package rsl;
 
+import java.util.*;
+
 public class Unit {
 
 	protected Game game;
-	protected Recipe recipe;
-	protected String name;
-	protected String data;
+	public ArrayList<Recipe> recipes;
+	public String name;
 	
-	public Unit(Game g, String unitdata) {
+	public Unit(Game g, String unitname) {
 		game = g;
-		data = unitdata;
-		name = data.substring(0,data.indexOf(":"));
+		name = unitname;
+		recipes = new ArrayList<Recipe>();
 	}
 	
-	public String name() {return name;}
-	public void readRecipe() {
-		recipe = new Recipe(game,this,data.substring(data.indexOf(":")+1));
-	}
 	
 }

@@ -58,7 +58,7 @@ public class Inventory {
 		while(uniter.hasNext()) {
 			Unit b = uniter.next();
 			if(inventory.get(b)>0)
-				s+=b.name()+"*"+inventory.get(b)+"\n";
+				s+=b.name+"*"+inventory.get(b)+"\n";
 		}
 		return s;
 	}
