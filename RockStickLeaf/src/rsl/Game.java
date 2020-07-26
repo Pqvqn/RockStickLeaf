@@ -72,13 +72,29 @@ public class Game extends JFrame{
 			System.out.print(players.get(0).name +": ");
 			String p1c = getConsoleInput();
 			while(p1c.substring(0,1).equals("#")) {
-				players.get(0).craft(units.get(p1c.substring(p1c.indexOf("#")+1)));
+				Unit craft = units.get(p1c.substring(p1c.indexOf("#")+1));
+				if(craft==null) {
+					System.out.println("Recipe: ");
+					craft = new Unit(this,p1c.substring(p1c.indexOf("#")+1)+":"+getConsoleInput());
+					units.put(craft.name(),craft);
+					craft.readRecipe();
+				}
+				players.get(0).craft(craft);
+				System.out.print(players.get(0).name +": ");
 				p1c = getConsoleInput();
 			}
 			System.out.print(players.get(1).name +": ");
 			String p2c = getConsoleInput();
 			while(p2c.substring(0,1).equals("#")) {
-				players.get(1).craft(units.get(p2c.substring(p2c.indexOf("#")+1)));
+				Unit craft = units.get(p2c.substring(p2c.indexOf("#")+1));
+				if(craft==null) {
+					System.out.println("Recipe: ");
+					craft = new Unit(this,getConsoleInput());
+					units.put(craft.name(),craft);
+					craft.readRecipe();
+				}
+				players.get(1).craft(craft);
+				System.out.print(players.get(1).name +": ");
 				p2c = getConsoleInput();
 			}
 			System.out.println("DID: "+doMatch(players.get(0),units.get(p1c),players.get(1),units.get(p2c)));
