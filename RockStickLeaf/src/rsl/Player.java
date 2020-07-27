@@ -9,6 +9,7 @@ public class Player {
 	private Inventory inventory;
 	public String name;
 	private int actionsTaken, actionsCap;
+	public ArrayList<Unit> targets;
 
 	public Player(Game g,String playername,File datafile) {
 		game = g;

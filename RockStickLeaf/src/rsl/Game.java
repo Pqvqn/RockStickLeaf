@@ -65,10 +65,7 @@ public class Game extends JFrame{
 				
 		add(draw);
 		pack();
-		
-		//System.out.println(matchups.victor(units.get("Rock"),units.get("Fire")).name());
-		
-		//System.out.println(players.get(1).canCraft(units.get("Fire")));
+
 		while(defaults.isEmpty()) {
 			System.out.println("List default units: ");
 			String listu = getConsoleInput();
@@ -85,32 +82,63 @@ public class Game extends JFrame{
 		
 		while(true) {
 			Player p1 = players.get(0);
+			p1.targets = new ArrayList<Unit>();
 			System.out.print(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
 			String p1c = getConsoleInput();
-			while(p1c.substring(0,1).equals("#")) {
+			while(p1c.substring(0,1).equals("#") || p1c.substring(0,1).equals("@")) {
 				if(p1.canAct()) {
-					Recipe craftr = getRecipe(p1c);
-					if(craftr!=null){
-						p1.craft(craftr);
+					switch(p1c.substring(0,1)) {
+					case "#": //crafting
+						Recipe craftr = getRecipe(p1c);
+						if(craftr!=null){
+							p1.craft(craftr);
+						}
+						break;
+					case "@": //capturing
+						Unit hostage = units.get(p1c.substring(p1c.indexOf("@")+1));
+						if(players.get(1).has(hostage)) {
+							p1.targets.add(hostage);
+							players.get(1).take(hostage);
+							p1.act();
+						}
+						break;
+					default:
+						break;
 					}
+					
 				}
 				System.out.print(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
 				p1c = getConsoleInput();
 			}
 			Player p2 = players.get(1);
+			p2.targets = new ArrayList<Unit>();
 			System.out.print(p2.name +" "+p2.actionsTaken()+"/"+p2.actionsCap()+": ");
 			String p2c = getConsoleInput();
-			while(p2c.substring(0,1).equals("#") && p2.canAct()) {
+			while(p2c.substring(0,1).equals("#") || p2c.substring(0,1).equals("@")) {
 				if(p2.canAct()) {
-					Recipe craftr = getRecipe(p2c);
-					if(craftr!=null) {
-						p2.craft(craftr);
+					switch(p2c.substring(0,1)) {
+					case "#": //crafting
+						Recipe craftr = getRecipe(p2c);
+						if(craftr!=null){
+							p2.craft(craftr);
+						}
+						break;
+					case "@": //capturing
+						Unit hostage = units.get(p2c.substring(p2c.indexOf("@")+1));
+						if(players.get(0).has(hostage)) {
+							p2.targets.add(hostage);
+							players.get(0).take(hostage);
+							p2.act();
+						}
+						break;
+					default:
+						break;
 					}
+					
 				}
 				System.out.print(p2.name +" "+p2.actionsTaken()+"/"+p2.actionsCap()+": ");
 				p2c = getConsoleInput();
 			}
-			
 			System.out.println("DID: "+doMatch(players.get(0),units.get(p1c),players.get(1),units.get(p2c)));
 		}
 	}
@@ -127,6 +155,8 @@ public class Game extends JFrame{
 		Unit winningUnit = matchups.victor(m);
 		if(winningUnit == null) {
 			doSwap(p1,p2,u1,u2);
+			p1.resetActions(false);
+			p2.resetActions(false);
 			return true;
 		}
 		Unit losingUnit = winningUnit.equals(u1) ? u2:u1;
@@ -144,6 +174,22 @@ public class Game extends JFrame{
 		}
 		if(!(losing instanceof DefaultUnit)){
 			loser.take(losing);
+		}
+		for(Unit hostage : winner.targets) {
+			if(!winning.equals(hostage)) {
+				Matchup m = new Matchup(new Unit[] {winning,hostage});
+				Unit winningUnit = matchups.victor(m);
+				if(winningUnit.equals(winning)) {
+					winner.give(hostage);
+				}else{
+					loser.give(hostage);
+				}
+			}else {
+				loser.give(hostage);
+			}
+		}
+		for(Unit hostage : loser.targets) {
+			winner.give(hostage);
 		}
 		winner.give(losing);
 		System.out.println(winner);
