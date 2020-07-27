@@ -84,20 +84,30 @@ public class Game extends JFrame{
 		System.out.println("Defaults are: "+def.substring(2));
 		
 		while(true) {
-			System.out.print(players.get(0).name +": ");
+			Player p1 = players.get(0);
+			System.out.print(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
 			String p1c = getConsoleInput();
 			while(p1c.substring(0,1).equals("#")) {
-				Recipe craftr = getRecipe(p1c);
-				if(craftr!=null)players.get(0).craft(craftr);
-				System.out.print(players.get(0).name +": ");
+				if(p1.canAct()) {
+					Recipe craftr = getRecipe(p1c);
+					if(craftr!=null){
+						p1.craft(craftr);
+					}
+				}
+				System.out.print(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
 				p1c = getConsoleInput();
 			}
-			System.out.print(players.get(1).name +": ");
+			Player p2 = players.get(1);
+			System.out.print(p2.name +" "+p2.actionsTaken()+"/"+p2.actionsCap()+": ");
 			String p2c = getConsoleInput();
-			while(p2c.substring(0,1).equals("#")) {
-				Recipe craftr = getRecipe(p2c);
-				if(craftr!=null)players.get(1).craft(craftr);
-				System.out.print(players.get(1).name +": ");
+			while(p2c.substring(0,1).equals("#") && p2.canAct()) {
+				if(p2.canAct()) {
+					Recipe craftr = getRecipe(p2c);
+					if(craftr!=null) {
+						p2.craft(craftr);
+					}
+				}
+				System.out.print(p2.name +" "+p2.actionsTaken()+"/"+p2.actionsCap()+": ");
 				p2c = getConsoleInput();
 			}
 			
@@ -109,6 +119,8 @@ public class Game extends JFrame{
 		if(!(p1.has(u1) && p2.has(u2)))return false;
 		if(u1.equals(u2)) {
 			doSwap(p1,p2,u1,u2);
+			p1.resetActions(false);
+			p2.resetActions(false);
 			return true;
 		}
 		Matchup m = new Matchup(new Unit[] {u1,u2});
@@ -121,6 +133,8 @@ public class Game extends JFrame{
 		Player winner = losingUnit.equals(u1)? p2:p1;
 		Player loser = losingUnit.equals(u1)? p1:p2;
 		doTransfer(winner,loser,winningUnit,losingUnit);
+		winner.resetActions(true);
+		loser.resetActions(false);
 		return true;
 	}
 	

@@ -8,6 +8,7 @@ public class Player {
 	private Game game;
 	private Inventory inventory;
 	public String name;
+	private int actionsTaken, actionsCap;
 
 	public Player(Game g,String playername,File datafile) {
 		game = g;
@@ -36,9 +37,9 @@ public class Player {
 			Unit b = uniter2.next();
 			give(b,r.products.get(b));
 		}
+		act();
 		System.out.println("Successfully crafted");
 	}
-	
 	public boolean has(Unit u) {
 		if(u instanceof DefaultUnit)return true;
 		return inventory.numberOf(u)>0;
@@ -55,6 +56,23 @@ public class Player {
 	public void take(Unit u,int quantity) {
 		give(u,-quantity);
 	}
+	public boolean canAct() {
+		return actionsTaken < actionsCap;
+	}
+	public void act() {
+		actionsTaken++;
+	}
+	public void resetActions(boolean wonRound) {
+		actionsTaken = 0;
+		actionsCap = wonRound ? 6:3;
+	}
+	public int actionsCap() {
+		return actionsCap;
+	}
+	public int actionsTaken() {
+		return actionsTaken;
+	}
+	
 	public String toString() {
 		return name+"\n"+inventory.toString();
 	}
