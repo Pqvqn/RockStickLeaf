@@ -63,4 +63,17 @@ public class MatchupLookup {
 		}
 		reader.close();
 	}
+	
+	public void writeFile() throws IOException {
+		FileWriter matchupWriter = new FileWriter(data);
+		Iterator<Matchup> matchuperator = table.keySet().iterator();
+		while(matchuperator.hasNext()) { //take recipes from set and write them
+			Matchup m = matchuperator.next();
+			Unit[] contenders = m.contenders();
+			String operator = (victor(m)==null)?"=":(victor(m).equals(contenders[0]))?">":"<";
+			
+			matchupWriter.write(contenders[0].name+operator+contenders[1].name+"\n");
+		}
+		matchupWriter.close();
+	}
 }

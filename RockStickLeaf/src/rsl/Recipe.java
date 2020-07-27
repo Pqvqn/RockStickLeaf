@@ -33,18 +33,9 @@ public class Recipe {
 		materials = new HashMap<Unit,Integer>();
 		products = new HashMap<Unit,Integer>();
 		if(r==null)return;
-		if(r.contains(":")) {
-			String[] components = r.split(":");
-			stringToMap(components[0],products);
-			stringToMap(components[1],materials);
-		}else {
-			String[] components = r.split(",");
-			for(int i=0; i<components.length; i++) {
-				DefaultUnit def = new DefaultUnit(game,components[i]);
-				game.units.put(components[i],def);
-				game.defaults.add(def);
-			}
-		}
+		String[] components = r.split(":");
+		stringToMap(components[0],products);
+		stringToMap(components[1],materials);
 		Iterator<Unit> uniter = productsIterator();
 		while(uniter.hasNext()) {
 			uniter.next().recipes.add(this);
@@ -52,7 +43,7 @@ public class Recipe {
 		
 	}
 	
-	private void stringToMap(String r, Map<Unit,Integer> m) {
+	private void stringToMap(String r, Map<Unit,Integer> m) { //takes string of comma-separated names/quantities and puts them into a map
 		String[] components = r.split(","); //commas separate material units
 		for(int i=0; i<components.length; i++) {
 			String component = components[i];
@@ -88,7 +79,6 @@ public class Recipe {
 			}else {
 				ret+=pu.name+"*"+products.get(pu)+",";
 			}
-
 		}
 		ret = ret.substring(0,ret.length()-1);
 		ret+=":";

@@ -73,7 +73,9 @@ public class Player {
 	public int actionsTaken() {
 		return actionsTaken;
 	}
-	
+	public void writeFile() throws IOException {
+		inventory.writeFile();
+	}
 	public String toString() {
 		return name+"\n"+inventory.toString();
 	}

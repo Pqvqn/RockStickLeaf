@@ -52,6 +52,12 @@ public class Inventory {
 		reader.close();
 	}
 	
+	public void writeFile() throws IOException {
+		FileWriter inventoryWriter = new FileWriter(data);
+		inventoryWriter.write(toString());
+		inventoryWriter.close();
+	}
+	
 	public String toString() {
 		Iterator<Unit> uniter = inventory.keySet().iterator();
 		String s = "";

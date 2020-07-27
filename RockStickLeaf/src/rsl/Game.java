@@ -80,67 +80,79 @@ public class Game extends JFrame{
 		for(DefaultUnit du : defaults)def+=", "+du.name;
 		System.out.println("Defaults are: "+def.substring(2));
 		
-		while(true) {
+		boolean doGame = true;
+		while(doGame) {
 			Player p1 = players.get(0);
 			p1.targets = new ArrayList<Unit>();
 			System.out.print(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
 			String p1c = getConsoleInput();
-			while(p1c.substring(0,1).equals("#") || p1c.substring(0,1).equals("@")) {
-				if(p1.canAct()) {
-					switch(p1c.substring(0,1)) {
-					case "#": //crafting
-						Recipe craftr = getRecipe(p1c);
-						if(craftr!=null){
-							p1.craft(craftr);
+			if(p1c.equals("(QUIT)")) {
+				doGame = false;
+			}else {
+				while(p1c.substring(0,1).equals("#") || p1c.substring(0,1).equals("@")) {
+					if(p1.canAct()) {
+						switch(p1c.substring(0,1)) {
+						case "#": //crafting
+							Recipe craftr = getRecipe(p1c);
+							if(craftr!=null){
+								p1.craft(craftr);
+							}
+							break;
+						case "@": //capturing
+							Unit hostage = units.get(p1c.substring(p1c.indexOf("@")+1));
+							if(players.get(1).has(hostage)) {
+								p1.targets.add(hostage);
+								players.get(1).take(hostage);
+								p1.act();
+							}
+							break;
+						default:
+							break;
 						}
-						break;
-					case "@": //capturing
-						Unit hostage = units.get(p1c.substring(p1c.indexOf("@")+1));
-						if(players.get(1).has(hostage)) {
-							p1.targets.add(hostage);
-							players.get(1).take(hostage);
-							p1.act();
-						}
-						break;
-					default:
-						break;
+						
 					}
-					
+					System.out.print(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
+					p1c = getConsoleInput();
 				}
-				System.out.print(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
-				p1c = getConsoleInput();
-			}
-			Player p2 = players.get(1);
-			p2.targets = new ArrayList<Unit>();
-			System.out.print(p2.name +" "+p2.actionsTaken()+"/"+p2.actionsCap()+": ");
-			String p2c = getConsoleInput();
-			while(p2c.substring(0,1).equals("#") || p2c.substring(0,1).equals("@")) {
-				if(p2.canAct()) {
-					switch(p2c.substring(0,1)) {
-					case "#": //crafting
-						Recipe craftr = getRecipe(p2c);
-						if(craftr!=null){
-							p2.craft(craftr);
-						}
-						break;
-					case "@": //capturing
-						Unit hostage = units.get(p2c.substring(p2c.indexOf("@")+1));
-						if(players.get(0).has(hostage)) {
-							p2.targets.add(hostage);
-							players.get(0).take(hostage);
-							p2.act();
-						}
-						break;
-					default:
-						break;
-					}
-					
-				}
+				Player p2 = players.get(1);
+				p2.targets = new ArrayList<Unit>();
 				System.out.print(p2.name +" "+p2.actionsTaken()+"/"+p2.actionsCap()+": ");
-				p2c = getConsoleInput();
+				String p2c = getConsoleInput();
+				while(p2c.substring(0,1).equals("#") || p2c.substring(0,1).equals("@")) {
+					if(p2.canAct()) {
+						switch(p2c.substring(0,1)) {
+						case "#": //crafting
+							Recipe craftr = getRecipe(p2c);
+							if(craftr!=null){
+								p2.craft(craftr);
+							}
+							break;
+						case "@": //capturing
+							Unit hostage = units.get(p2c.substring(p2c.indexOf("@")+1));
+							if(players.get(0).has(hostage)) {
+								p2.targets.add(hostage);
+								players.get(0).take(hostage);
+								p2.act();
+							}
+							break;
+						default:
+							break;
+						}
+						
+					}
+					System.out.print(p2.name +" "+p2.actionsTaken()+"/"+p2.actionsCap()+": ");
+					p2c = getConsoleInput();
+				}
+				System.out.println("DID: "+doMatch(players.get(0),units.get(p1c),players.get(1),units.get(p2c)));
 			}
-			System.out.println("DID: "+doMatch(players.get(0),units.get(p1c),players.get(1),units.get(p2c)));
 		}
+		try {
+			writeFiles();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Game has ended");
 	}
 
 	private boolean doMatch(Player p1, Unit u1, Player p2, Unit u2) { //returns if match is successful; carries match out if can
@@ -217,7 +229,16 @@ public class Game extends JFrame{
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(b),"UTF-8"));
 		String curr = reader.readLine();
 		while(curr!=null) { //add all units to hashmap
-			recipes.add(new Recipe(this,curr));
+			if(curr.contains(":")) { //tests if this is a recipe or a list of defaults
+				recipes.add(new Recipe(this,curr));
+			}else {
+				String[] components = curr.split(",");
+				for(int i=0; i<components.length; i++) {
+					DefaultUnit def = new DefaultUnit(this,components[i]);
+					units.put(components[i],def);
+					defaults.add(def);
+				}
+			}
 			curr = reader.readLine();
 		}
 		//printRecipes();
@@ -251,6 +272,7 @@ public class Game extends JFrame{
 			System.out.println("Recipe: ");
 			craftr = new Recipe(this,getConsoleInput());
 			craftu = units.get(u.substring(u.indexOf("#")+1));
+			recipes.add(craftr);
 		}
 		while(craftr==null) {
 			System.out.println("Choose Recipe:\n0: Cancel\n1: New");
@@ -265,6 +287,7 @@ public class Game extends JFrame{
 				}else if(ans==1) {
 					System.out.println("Recipe: ");
 					craftr = new Recipe(this,getConsoleInput());
+					recipes.add(craftr);
 					return craftr;
 				}else {
 					craftr = craftu.recipes.get(ans-2);
@@ -274,6 +297,32 @@ public class Game extends JFrame{
 			}
 		}
 		return craftr;
+	}
+	
+	public void writeFiles() throws IOException {
+		//recipes
+		File recipeFile = new File(filepath+"/recipes.txt");
+		FileWriter recipeWriter = new FileWriter(recipeFile);
+		Iterator<Recipe> recipiterator = recipes.iterator();
+		String defhead = ""; //handle defaults at top
+		for(Unit du : defaults) {
+			defhead += ","+du.name;
+		}
+		recipeWriter.write(defhead.substring(1)+"\n");
+		while(recipiterator.hasNext()) { //take recipes from set and write them
+			recipeWriter.write(recipiterator.next().toString()+"\n");
+		}
+		recipeWriter.close();
+		
+		//matchups
+		matchups.writeFile();
+		
+		//players
+		for(int i=0; i<players.size(); i++) {
+			players.get(i).writeFile();
+		}
+		
+		
 	}
 	
 }
