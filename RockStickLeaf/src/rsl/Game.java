@@ -15,7 +15,8 @@ public class Game extends JFrame{
 	public ArrayList<Player> players;
 	public int playerCount;
 	public MatchupLookup matchups;
-	public Map<String,Unit> units;
+	public Map<String,Unit> units; //map: get unit object from its name as a string
+	public ArrayList<Unit> unitorder; //units stored in order
 	public ArrayList<DefaultUnit> defaults;
 	public Set<Recipe> recipes;
 	private Scanner s;
@@ -30,6 +31,7 @@ public class Game extends JFrame{
 		defaults = new ArrayList<DefaultUnit>();
 		try {
 			createUnits();
+			createRecipes();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -71,9 +73,7 @@ public class Game extends JFrame{
 			String listu = getConsoleInput();
 			String[] components = listu.split(",");
 			for(int i=0; i<components.length; i++) {
-				DefaultUnit du = new DefaultUnit(this,components[i]);
-				defaults.add(du);
-				units.put(components[i],du);
+				addNewUnit(new DefaultUnit(this,components[i]));
 			}
 		}
 		String def = "";
@@ -219,26 +219,41 @@ public class Game extends JFrame{
 		System.out.println(p2);
 		System.out.println("TIE");
 	}
-	
+	private void addNewUnit(Unit u) {
+		if(u instanceof DefaultUnit)defaults.add((DefaultUnit)u);
+		units.put(u.name,u);
+		unitorder.add(u);
+	}
 	private void createUnits() throws IOException { //builds all unit types from file
+		unitorder = new ArrayList<Unit>();
 		units = new HashMap<String,Unit>();
+		File b = new File(filepath+"/units.txt");
+		b.getParentFile().mkdirs();
+		b.createNewFile();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(b),"UTF-8"));
+		String curr = reader.readLine();
+		while(curr!=null) { //add all units to hashmap and arraylist
+			Unit u;
+			if(curr.substring(0,1).equals(":")) { //tests if this is a recipe or a list of defaults
+				u = new DefaultUnit(this,curr.substring(1));
+			}else {
+				u = new Unit(this,curr);
+			}
+			addNewUnit(u);
+			curr = reader.readLine();
+		}
+		//printRecipes();
+		reader.close();
+	}
+	private void createRecipes() throws IOException { //builds all unit types from file
 		recipes = new HashSet<Recipe>();
 		File b = new File(filepath+"/recipes.txt");
 		b.getParentFile().mkdirs();
 		b.createNewFile();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(b),"UTF-8"));
 		String curr = reader.readLine();
-		while(curr!=null) { //add all units to hashmap
-			if(curr.contains(":")) { //tests if this is a recipe or a list of defaults
-				recipes.add(new Recipe(this,curr));
-			}else {
-				String[] components = curr.split(",");
-				for(int i=0; i<components.length; i++) {
-					DefaultUnit def = new DefaultUnit(this,components[i]);
-					units.put(components[i],def);
-					defaults.add(def);
-				}
-			}
+		while(curr!=null) { //create all recipes
+			recipes.add(new Recipe(this,curr));
 			curr = reader.readLine();
 		}
 		//printRecipes();
@@ -270,6 +285,7 @@ public class Game extends JFrame{
 		Recipe craftr = null;
 		while(craftu==null) {
 			System.out.println("Recipe: ");
+			addNewUnit(new Unit(this,(u.substring(u.indexOf("#")+1))));
 			craftr = new Recipe(this,getConsoleInput());
 			craftu = units.get(u.substring(u.indexOf("#")+1));
 			recipes.add(craftr);
@@ -300,15 +316,18 @@ public class Game extends JFrame{
 	}
 	
 	public void writeFiles() throws IOException {
+		//units
+		File unitFile = new File(filepath+"/units.txt");
+		FileWriter unitWriter = new FileWriter(unitFile);
+		for(Unit u : unitorder) { //list unit names in order, start with : if default
+			unitWriter.write((u instanceof DefaultUnit ? ":" : "") + u.name+"\n");
+		}
+		unitWriter.close();
+		
 		//recipes
 		File recipeFile = new File(filepath+"/recipes.txt");
 		FileWriter recipeWriter = new FileWriter(recipeFile);
 		Iterator<Recipe> recipiterator = recipes.iterator();
-		String defhead = ""; //handle defaults at top
-		for(Unit du : defaults) {
-			defhead += ","+du.name;
-		}
-		recipeWriter.write(defhead.substring(1)+"\n");
 		while(recipiterator.hasNext()) { //take recipes from set and write them
 			recipeWriter.write(recipiterator.next().toString()+"\n");
 		}

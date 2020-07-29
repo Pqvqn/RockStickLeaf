@@ -51,15 +51,9 @@ public class Recipe {
 			Integer quantity;//number required 
 			if(component.contains("*")) { //if quantity given, use it, otherwise use 1
 				String[] components2 = (component.split("\\*"));
-				if(!game.units.containsKey(components2[0])) {
-					game.units.put(components2[0],new Unit(game,components2[0]));
-				}
 				unit = game.units.get(components2[0]);
 				quantity = Integer.parseInt(components2[1]);
 			}else {
-				if(!game.units.containsKey(component)) {
-					game.units.put(component,new Unit(game,component));
-				}
 				unit = game.units.get(component);
 				quantity = 1;
 			}
