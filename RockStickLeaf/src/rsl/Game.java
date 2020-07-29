@@ -23,6 +23,7 @@ public class Game extends JFrame{
 	
 	public Game(int playerNum) {
 		super("Rock Stick Leaf");
+		
 		s = new Scanner(System.in);
 		System.out.println("Save name: ");
 		savename = getConsoleInput();
@@ -343,5 +344,54 @@ public class Game extends JFrame{
 		
 		
 	}
+	
+	//given string of button presses (down, left, right), return int number
+	public int decode(String presses) {
+		int num = 0;
+		for(int i=1; i<=presses.length(); i++) {
+			String character = presses.substring(presses.length()-i,presses.length()-i+1);
+			int value = 0;
+			switch(character) {
+			case "v":
+				value = 1;
+				break;
+			case "<":
+				value = 2;
+				break;
+			case ">":
+				value = 3;
+				break;
+			}
+			num += value*Math.pow(3,i-1);
+		}
+		return num-1;
+	}
+	//given int number, return string of button presses (down, left, right)
+	public String encode(int number) {
+
+		String ret = "";
+		number++;
+		//System.out.println(largestpower);
+		for(int i=0; number>0; i++) {
+			int larger = (int)(Math.pow(3,i+1));
+			int left = number%larger;
+			int num = left==0 ? 3 : (int)(left/Math.pow(3,i));
+			switch(num) {
+			case 1:
+				ret="v"+ret;
+				break;
+			case 2:
+				ret="<"+ret;
+				break;
+			case 3:
+				ret=">"+ret;
+				break;
+				
+			}
+			number -= num*Math.pow(3,i);
+		}
+		return ret;
+	}
+	
 	
 }
