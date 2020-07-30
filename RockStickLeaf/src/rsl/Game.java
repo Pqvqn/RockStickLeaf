@@ -31,6 +31,7 @@ public class Game extends JFrame{
 		savename = getConsoleInput();
 		filepath = System.getProperty("user.home")+"/Documents/RockStickLeaf/"+savename;
 		//game data
+		draw = new Draw(this);
 		defaults = new ArrayList<DefaultUnit>();
 		try {
 			createUnits();
@@ -49,7 +50,7 @@ public class Game extends JFrame{
 			String pname = getConsoleInput();
 			players.add(new Player(this,pname,new File(filepath+"/inventory_"+pname+".txt"),i));
 		}
-		draw = new Draw(this);
+
 		controls = new ArrayList<Controls>();
 		for(int i=0; i<players.size(); i++) {
 			controls.add(new Controls(this,players.get(i),i));
@@ -81,12 +82,7 @@ public class Game extends JFrame{
 		}
 		String def = "";
 		for(DefaultUnit du : defaults)def+=", "+du.name;
-		System.out.println("Defaults are: "+def.substring(2));
-		
-		//ui test
-		Unit ud = unitorder.get((int)(Math.random()*unitorder.size()));
-		draw.addUI(new UIUnit(this,100,100,ud,encode(unitorder.indexOf(ud)),-1));
-		
+		System.out.println("Defaults are: "+def.substring(2));		
 		
 		boolean doGame = true;
 		ArrayList<Player> doneMove = players; //order in which players did move
@@ -251,6 +247,9 @@ public class Game extends JFrame{
 		if(u instanceof DefaultUnit)defaults.add((DefaultUnit)u);
 		units.put(u.name,u);
 		unitorder.add(u);
+		//ui
+		draw.addUI(new UIUnit(this,100,10+unitorder.indexOf(u)*24,16,u,encode(unitorder.indexOf(u)),-1));
+		draw.repaint();
 	}
 	private void createUnits() throws IOException { //builds all unit types from file
 		unitorder = new ArrayList<Unit>();
