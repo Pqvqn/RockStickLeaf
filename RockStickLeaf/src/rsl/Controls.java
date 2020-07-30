@@ -20,15 +20,26 @@ public class Controls implements KeyListener{
 		scheme = c;
 	}
 	
-	public void keyPressed(KeyEvent arg0) {
+	public void keyPressed(KeyEvent e) {
+		int key = e.getKeyCode();
+		if(player.choice == null) {
+			if(key == CONTROLSCHEMES[scheme][UPKEY]) {
+				player.completeDirKeys();
+			}else if(key == CONTROLSCHEMES[scheme][DOWNKEY]) {
+				player.addDirKey("v");
+			}else if(key == CONTROLSCHEMES[scheme][LEFTKEY]) {
+				player.addDirKey("<");
+			}else if(key == CONTROLSCHEMES[scheme][RIGHTKEY]) {
+				player.addDirKey(">");
+			}
+		}
+	}
+
+	public void keyReleased(KeyEvent e) {
 		
 	}
 
-	public void keyReleased(KeyEvent arg0) {
-		
-	}
-
-	public void keyTyped(KeyEvent arg0) {
+	public void keyTyped(KeyEvent e) {
 		
 	}
 

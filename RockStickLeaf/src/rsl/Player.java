@@ -8,13 +8,18 @@ public class Player {
 	private Game game;
 	private Inventory inventory;
 	public String name;
-	private int actionsTaken, actionsCap;
-	public ArrayList<Unit> targets;
+	private Controls controls;
+	private int actionsTaken, actionsCap; //limit on actions per turn
+	public ArrayList<Unit> targets; //units that this player is targeting to capture
+	public Unit choice; //unit choice for this turn
+	private String choosing; //presses for choice
 
-	public Player(Game g,String playername,File datafile) {
+
+	public Player(Game g,String playername,File datafile,int id) {
 		game = g;
 		inventory = new Inventory(game,datafile);
 		name = playername;
+		controls = new Controls(game,this,id);
 	}
 	
 	public boolean canCraft(Recipe r) {
@@ -57,6 +62,15 @@ public class Player {
 	public void take(Unit u,int quantity) {
 		give(u,-quantity);
 	}
+	public void addDirKey(String dirkey) {
+		choosing += dirkey;
+	}
+	public void completeDirKeys() {
+		int num = game.decode(choosing);
+		choice = (num<0 || num>=game.unitorder.size() || !has(game.unitorder.get(num)))?null:game.unitorder.get(num);
+		choosing = "";
+	}
+	
 	public boolean canAct() {
 		return actionsTaken < actionsCap;
 	}

@@ -45,7 +45,7 @@ public class Game extends JFrame{
 		for(int i=0; i<playerCount; i++) {
 			System.out.println("Player "+i+": ");
 			String pname = getConsoleInput();
-			players.add(new Player(this,pname,new File(filepath+"/inventory_"+pname+".txt")));
+			players.add(new Player(this,pname,new File(filepath+"/inventory_"+pname+".txt"),i));
 		}
 		draw = new Draw(this);
 		controls = new ArrayList<Controls>();
@@ -82,8 +82,9 @@ public class Game extends JFrame{
 		System.out.println("Defaults are: "+def.substring(2));
 		
 		boolean doGame = true;
+		ArrayList<Player> doneMove = players; //order in which players did move
 		while(doGame) {
-			Player p1 = players.get(0);
+			Player p1 = doneMove.get(1);
 			p1.targets = new ArrayList<Unit>();
 			System.out.print(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
 			String p1c = getConsoleInput();
@@ -101,9 +102,9 @@ public class Game extends JFrame{
 							break;
 						case "@": //capturing
 							Unit hostage = units.get(p1c.substring(p1c.indexOf("@")+1));
-							if(players.get(1).has(hostage)) {
+							if(doneMove.get(0).has(hostage)) {
 								p1.targets.add(hostage);
-								players.get(1).take(hostage);
+								doneMove.get(0).take(hostage);
 								p1.act();
 							}
 							break;
@@ -115,7 +116,7 @@ public class Game extends JFrame{
 					System.out.print(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
 					p1c = getConsoleInput();
 				}
-				Player p2 = players.get(1);
+				Player p2 = doneMove.get(0);
 				p2.targets = new ArrayList<Unit>();
 				System.out.print(p2.name +" "+p2.actionsTaken()+"/"+p2.actionsCap()+": ");
 				String p2c = getConsoleInput();
@@ -130,9 +131,9 @@ public class Game extends JFrame{
 							break;
 						case "@": //capturing
 							Unit hostage = units.get(p2c.substring(p2c.indexOf("@")+1));
-							if(players.get(0).has(hostage)) {
+							if(doneMove.get(1).has(hostage)) {
 								p2.targets.add(hostage);
-								players.get(0).take(hostage);
+								doneMove.get(1).take(hostage);
 								p2.act();
 							}
 							break;
@@ -144,7 +145,26 @@ public class Game extends JFrame{
 					System.out.print(p2.name +" "+p2.actionsTaken()+"/"+p2.actionsCap()+": ");
 					p2c = getConsoleInput();
 				}
-				System.out.println("DID: "+doMatch(players.get(0),units.get(p1c),players.get(1),units.get(p2c)));
+				System.out.println("3");
+				freeze(1000);
+				System.out.println("2");
+				freeze(1000);
+				System.out.println("1");
+				freeze(1000);
+				System.out.println("GO");
+				doneMove = new ArrayList<Player>();
+				while(doneMove.size()<players.size()) {
+					for(int i=0; i<players.size(); i++) {
+						if(!doneMove.contains(players.get(i)) && players.get(i).choice!=null) {
+							doneMove.add(players.get(i));
+							System.out.println(players.get(i).name+" LOCKED");
+						}
+					}
+				}
+				System.out.println(players.get(0).choice.name +" v "+ players.get(1).choice.name);
+				System.out.println("DID: "+doMatch(players.get(0),players.get(0).choice,players.get(1),players.get(1).choice)+"\n");
+				players.get(0).choice = null;
+				players.get(1).choice = null;
 			}
 		}
 		try {
@@ -393,5 +413,11 @@ public class Game extends JFrame{
 		return ret;
 	}
 	
+	//sleep
+	public void freeze(int millis) {
+		try {
+			Thread.sleep(millis);
+		}catch(InterruptedException e){};
+	}
 	
 }
