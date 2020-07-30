@@ -4,6 +4,8 @@ import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
+import ui.*;
+
 public class Game extends JFrame{
 
 	private static final long serialVersionUID = 1L;
@@ -80,6 +82,11 @@ public class Game extends JFrame{
 		String def = "";
 		for(DefaultUnit du : defaults)def+=", "+du.name;
 		System.out.println("Defaults are: "+def.substring(2));
+		
+		//ui test
+		Unit ud = unitorder.get((int)(Math.random()*unitorder.size()));
+		draw.addUI(new UIUnit(this,100,100,ud,encode(unitorder.indexOf(ud)),-1));
+		
 		
 		boolean doGame = true;
 		ArrayList<Player> doneMove = players; //order in which players did move
