@@ -22,6 +22,15 @@ public class Controls implements KeyListener{
 	
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
+		if(player.isTurn) {
+			if(key == CONTROLSCHEMES[scheme][UPKEY]) { //end turn = ^
+				player.isTurn = false;
+			}else if(key == CONTROLSCHEMES[scheme][DOWNKEY]) { //craft = v
+				//player.isTurn = false;
+			}else if(key == CONTROLSCHEMES[scheme][RIGHTKEY]) { //capture = >
+				//player.isTurn = false;
+			}
+		}
 		if(player.choice == null) {
 			if(key == CONTROLSCHEMES[scheme][UPKEY]) {
 				player.completeDirKeys();

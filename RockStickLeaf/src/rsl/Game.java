@@ -51,6 +51,7 @@ public class Game extends JFrame{
 			players.add(new Player(this,pname,new File(filepath+"/inventory_"+pname+".txt"),i));
 			draw.inventories.add(new UIInventory(this,70+i*300,100,20,players.get(i)));
 		}	
+		draw.match = new UIMatch(this,X_RESOL/2,Y_RESOL-100,50,players);
 		
 		controls = new ArrayList<Controls>();
 		for(int i=0; i<players.size(); i++) {
@@ -95,7 +96,8 @@ public class Game extends JFrame{
 			if(p1c.equals("(QUIT)")) {
 				doGame = false;
 			}else {
-				while(p1c.length()>0 && (p1c.substring(0,1).equals("#") || p1c.substring(0,1).equals("@"))) {
+				p1.isTurn = true;
+				while(p1.isTurn && p1c.length()>0 && (p1c.substring(0,1).equals("#") || p1c.substring(0,1).equals("@"))) {
 					if(p1.canAct()) {
 						switch(p1c.substring(0,1)) {
 						case "#": //crafting
@@ -105,12 +107,7 @@ public class Game extends JFrame{
 							}
 							break;
 						case "@": //capturing
-							Unit hostage = units.get(p1c.substring(p1c.indexOf("@")+1));
-							if(doneMove.get(0).has(hostage)) {
-								p1.targets.add(hostage);
-								doneMove.get(0).take(hostage);
-								p1.act();
-							}
+							p1.capture(doneMove.get(0),units.get(p1c.substring(p1c.indexOf("@")+1)));
 							break;
 						default:
 							break;
@@ -126,7 +123,8 @@ public class Game extends JFrame{
 				p2.targets = new ArrayList<Unit>();
 				System.out.print(p2.name +" "+p2.actionsTaken()+"/"+p2.actionsCap()+": ");
 				String p2c = getConsoleInput();
-				while(p2c.length()>0 && (p2c.substring(0,1).equals("#") || p2c.substring(0,1).equals("@"))) {
+				p2.isTurn = true;
+				while(p2.isTurn && p2c.length()>0 && (p2c.substring(0,1).equals("#") || p2c.substring(0,1).equals("@"))) {
 					if(p2.canAct()) {
 						switch(p2c.substring(0,1)) {
 						case "#": //crafting
@@ -136,12 +134,7 @@ public class Game extends JFrame{
 							}
 							break;
 						case "@": //capturing
-							Unit hostage = units.get(p2c.substring(p2c.indexOf("@")+1));
-							if(doneMove.get(1).has(hostage)) {
-								p2.targets.add(hostage);
-								doneMove.get(1).take(hostage);
-								p2.act();
-							}
+							p2.capture(doneMove.get(1),units.get(p2c.substring(p2c.indexOf("@")+1)));
 							break;
 						default:
 							break;

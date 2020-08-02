@@ -10,6 +10,7 @@ public class Player {
 	public String name;
 	private Controls controls;
 	private int actionsTaken, actionsCap; //limit on actions per turn
+	public boolean isTurn; //whether it is this player's turn to act
 	public ArrayList<Unit> targets; //units that this player is targeting to capture
 	public Unit choice; //unit choice for this turn
 	private String choosing; //presses for choice
@@ -46,6 +47,15 @@ public class Player {
 		act();
 		System.out.println("Successfully crafted");
 	}
+	
+	public void capture(Player enemy, Unit target) {
+		if(enemy.has(target)) {
+			targets.add(target);
+			enemy.take(target);
+			act();
+		}
+	}
+	
 	public boolean has(Unit u) {
 		if(u instanceof DefaultUnit)return true;
 		return inventory.numberOf(u)>0;
