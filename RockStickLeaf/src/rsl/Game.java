@@ -15,6 +15,7 @@ public class Game extends JFrame{
 	public Draw draw;
 	public ArrayList<Controls> controls;
 	public ArrayList<Player> players;
+	public ArrayList<Player> doneMove; //order in which players did moves
 	public int playerCount;
 	public MatchupLookup matchups;
 	public Map<String,Unit> units; //map: get unit object from its name as a string
@@ -87,89 +88,38 @@ public class Game extends JFrame{
 		System.out.println("Defaults are: "+def.substring(2));		
 		
 		boolean doGame = true;
-		ArrayList<Player> doneMove = players; //order in which players did move
 		while(doGame) {
-			Player p1 = doneMove.get(1);
-			p1.targets = new ArrayList<Unit>();
-			System.out.print(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
-			String p1c = getConsoleInput();
-			if(p1c.equals("(QUIT)")) {
-				doGame = false;
-			}else {
-				p1.isTurn = true;
-				while(p1.isTurn && p1c.length()>0 && (p1c.substring(0,1).equals("#") || p1c.substring(0,1).equals("@"))) {
-					if(p1.canAct()) {
-						switch(p1c.substring(0,1)) {
-						case "#": //crafting
-							Recipe craftr = getRecipe(p1c);
-							if(craftr!=null){
-								p1.craft(craftr);
-							}
-							break;
-						case "@": //capturing
-							p1.capture(doneMove.get(0),units.get(p1c.substring(p1c.indexOf("@")+1)));
-							break;
-						default:
-							break;
-						}
-						
-					}
-					System.out.print(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
-					draw.updateUIElement(draw.inventories);
-					draw.repaint();
-					p1c = getConsoleInput();
-				}
-				Player p2 = doneMove.get(0);
-				p2.targets = new ArrayList<Unit>();
-				System.out.print(p2.name +" "+p2.actionsTaken()+"/"+p2.actionsCap()+": ");
-				String p2c = getConsoleInput();
-				p2.isTurn = true;
-				while(p2.isTurn && p2c.length()>0 && (p2c.substring(0,1).equals("#") || p2c.substring(0,1).equals("@"))) {
-					if(p2.canAct()) {
-						switch(p2c.substring(0,1)) {
-						case "#": //crafting
-							Recipe craftr = getRecipe(p2c);
-							if(craftr!=null){
-								p2.craft(craftr);
-							}
-							break;
-						case "@": //capturing
-							p2.capture(doneMove.get(1),units.get(p2c.substring(p2c.indexOf("@")+1)));
-							break;
-						default:
-							break;
-						}
-						
-					}
-					System.out.print(p2.name +" "+p2.actionsTaken()+"/"+p2.actionsCap()+": ");
-					draw.updateUIElement(draw.inventories);
-					draw.repaint();
-					p2c = getConsoleInput();	
-				}
-				System.out.println("3");
-				freeze(1000);
-				System.out.println("2");
-				freeze(1000);
-				System.out.println("1");
-				freeze(1000);
-				System.out.println("GO");
-				doneMove = new ArrayList<Player>();
-				while(doneMove.size()<players.size()) {
-					for(int i=0; i<players.size(); i++) {
-						if(!doneMove.contains(players.get(i)) && players.get(i).choice!=null) {
-							doneMove.add(players.get(i));
-							System.out.println(players.get(i).name+" LOCKED");
-						}
-					}
-				}
-				System.out.println(players.get(0).choice.name +" v "+ players.get(1).choice.name);
-				System.out.println("DID: "+doMatch(players.get(0),players.get(0).choice,players.get(1),players.get(1).choice)+"\n");
-				draw.updateUIElement(draw.inventories);
-				draw.repaint();
-				players.get(0).choice = null;
-				players.get(1).choice = null;
+			doneMove = new ArrayList<Player>();
+			for(int i=0; i<players.size(); i++) {
+				players.get(i).canThrow = true;
 			}
+			System.out.println("3");
+			freeze(1000);
+			System.out.println("2");
+			freeze(1000);
+			System.out.println("1");
+			freeze(1000);
+			System.out.println("GO");
+			doneMove = new ArrayList<Player>();
+			while(doneMove.size()<players.size()) {
+			}
+				
+			System.out.println(players.get(0).choice.name +" v "+ players.get(1).choice.name);
+			System.out.println("DID: "+doMatch(players.get(0),players.get(0).choice,players.get(1),players.get(1).choice)+"\n");
+			draw.updateUIElement(draw.inventories);
+			draw.repaint();
+			players.get(0).choice = null;
+			players.get(1).choice = null;
+			
+			for(int i=0; i<doneMove.size(); i++) {
+				Player p = doneMove.get(i);
+				p.isTurn = true;
+				while(p.isTurn) {}
+			}
+			
+			
 		}
+		
 		try {
 			writeFiles();
 		} catch (IOException e) {
@@ -179,6 +129,20 @@ public class Game extends JFrame{
 		System.out.println("Game has ended");
 	}
 
+	public void playerThrows(Player p, Unit u) { //player throws a unit to battle
+		if(doneMove.contains(p))return;
+		p.canThrow = false;
+		doneMove.add(p);
+		p.choice = u;
+	}
+	
+	public Player otherPlayer(Player compare) {
+		for(Player p : players) {
+			if(!p.equals(compare))return p;
+		}
+		return null;
+	}
+	
 	private boolean doMatch(Player p1, Unit u1, Player p2, Unit u2) { //returns if match is successful; carries match out if can
 		if(!(p1.has(u1) && p2.has(u2)))return false;
 		if(u1.equals(u2)) {
@@ -243,7 +207,7 @@ public class Game extends JFrame{
 		System.out.println(p2);
 		System.out.println("TIE");
 	}
-	private void addNewUnit(Unit u) {
+	public void addNewUnit(Unit u) {
 		if(u instanceof DefaultUnit)defaults.add((DefaultUnit)u);
 		units.put(u.name,u);
 		unitorder.add(u);

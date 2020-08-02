@@ -27,6 +27,8 @@ public class Inventory {
 	public void addUnits(Unit u,int quantity) {
 		if(!inventory.containsKey(u))inventory.put(u,0);
 		inventory.put(u,inventory.get(u)+quantity);
+		game.draw.updateUIElement(game.draw.inventories);
+		game.draw.repaint();
 	}
 	
 	private void buildTable() throws IOException {

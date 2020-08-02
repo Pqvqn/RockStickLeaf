@@ -11,9 +11,9 @@ public class Player {
 	private Controls controls;
 	private int actionsTaken, actionsCap; //limit on actions per turn
 	public boolean isTurn; //whether it is this player's turn to act
+	public boolean canThrow; //whether player needs to throw a unit
 	public ArrayList<Unit> targets; //units that this player is targeting to capture
-	public Unit choice; //unit choice for this turn
-	private String choosing; //presses for choice
+	public Unit choice;
 
 
 	public Player(Game g,String playername,File datafile,int id) {
@@ -71,14 +71,6 @@ public class Player {
 	}
 	public void take(Unit u,int quantity) {
 		give(u,-quantity);
-	}
-	public void addDirKey(String dirkey) {
-		choosing += dirkey;
-	}
-	public void completeDirKeys() {
-		int num = game.decode(choosing);
-		choice = (num<0 || num>=game.unitorder.size() || !has(game.unitorder.get(num)))?null:game.unitorder.get(num);
-		choosing = "";
 	}
 	
 	public boolean canAct() {
