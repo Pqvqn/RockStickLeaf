@@ -49,8 +49,9 @@ public class Game extends JFrame{
 			System.out.println("Player "+i+": ");
 			String pname = getConsoleInput();
 			players.add(new Player(this,pname,new File(filepath+"/inventory_"+pname+".txt"),i));
-		}
-
+			draw.inventories.add(new UIInventory(this,70+i*300,100,20,players.get(i)));
+		}	
+		
 		controls = new ArrayList<Controls>();
 		for(int i=0; i<players.size(); i++) {
 			controls.add(new Controls(this,players.get(i),i));
@@ -94,7 +95,7 @@ public class Game extends JFrame{
 			if(p1c.equals("(QUIT)")) {
 				doGame = false;
 			}else {
-				while(p1c.substring(0,1).equals("#") || p1c.substring(0,1).equals("@")) {
+				while(p1c.length()>0 && (p1c.substring(0,1).equals("#") || p1c.substring(0,1).equals("@"))) {
 					if(p1.canAct()) {
 						switch(p1c.substring(0,1)) {
 						case "#": //crafting
@@ -117,13 +118,15 @@ public class Game extends JFrame{
 						
 					}
 					System.out.print(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
+					draw.updateUIElement(draw.inventories);
+					draw.repaint();
 					p1c = getConsoleInput();
 				}
 				Player p2 = doneMove.get(0);
 				p2.targets = new ArrayList<Unit>();
 				System.out.print(p2.name +" "+p2.actionsTaken()+"/"+p2.actionsCap()+": ");
 				String p2c = getConsoleInput();
-				while(p2c.substring(0,1).equals("#") || p2c.substring(0,1).equals("@")) {
+				while(p2c.length()>0 && (p2c.substring(0,1).equals("#") || p2c.substring(0,1).equals("@"))) {
 					if(p2.canAct()) {
 						switch(p2c.substring(0,1)) {
 						case "#": //crafting
@@ -146,7 +149,9 @@ public class Game extends JFrame{
 						
 					}
 					System.out.print(p2.name +" "+p2.actionsTaken()+"/"+p2.actionsCap()+": ");
-					p2c = getConsoleInput();
+					draw.updateUIElement(draw.inventories);
+					draw.repaint();
+					p2c = getConsoleInput();	
 				}
 				System.out.println("3");
 				freeze(1000);
@@ -166,6 +171,8 @@ public class Game extends JFrame{
 				}
 				System.out.println(players.get(0).choice.name +" v "+ players.get(1).choice.name);
 				System.out.println("DID: "+doMatch(players.get(0),players.get(0).choice,players.get(1),players.get(1).choice)+"\n");
+				draw.updateUIElement(draw.inventories);
+				draw.repaint();
 				players.get(0).choice = null;
 				players.get(1).choice = null;
 			}
@@ -247,9 +254,6 @@ public class Game extends JFrame{
 		if(u instanceof DefaultUnit)defaults.add((DefaultUnit)u);
 		units.put(u.name,u);
 		unitorder.add(u);
-		//ui
-		draw.addUI(new UIUnit(this,100,10+unitorder.indexOf(u)*24,16,u,encode(unitorder.indexOf(u)),-1));
-		draw.repaint();
 	}
 	private void createUnits() throws IOException { //builds all unit types from file
 		unitorder = new ArrayList<Unit>();

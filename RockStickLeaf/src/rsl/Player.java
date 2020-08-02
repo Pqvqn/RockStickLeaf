@@ -87,6 +87,7 @@ public class Player {
 	public int actionsTaken() {
 		return actionsTaken;
 	}
+	public Inventory getInventory() {return inventory;}
 	public void writeFile() throws IOException {
 		inventory.writeFile();
 	}

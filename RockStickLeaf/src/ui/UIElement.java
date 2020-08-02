@@ -22,6 +22,7 @@ public abstract class UIElement {
 	public int getyPos() {return yPos;}
 	public void setyPos(int yPos) {this.yPos = yPos;}
 
+	public void update() {} //to be overriden for updating aspects of ui
 	
 	public void paint(Graphics g) {
 		for(int i=0; i<parts.size(); i++) { //paint all uielements within
