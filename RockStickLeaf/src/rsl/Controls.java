@@ -26,8 +26,12 @@ public class Controls implements KeyListener{
 	
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
-		if(player.sequence()==null)sequence=null;
+		if(!player.awaiting)return;
+		
 		if(player.isTurn) {
+			if(!player.awaiting) {
+				return;
+			}
 			if(key == CONTROLSCHEMES[scheme][UPKEY]) {
 				sequence = choosingsequence;
 				choosingsequence = "";
@@ -41,9 +45,7 @@ public class Controls implements KeyListener{
 			}
 		}else if(player.choice == null){
 			if(key == CONTROLSCHEMES[scheme][UPKEY]) {
-				int num = game.decode(choosingsequence);
-				if(game.unitorder.size()>num && 0<=num && player.has(game.unitorder.get(num)))
-					player.choice = game.unitorder.get(num);
+				player.makeChoice(choosingsequence);
 				choosingsequence = "";
 			}else if(key == CONTROLSCHEMES[scheme][DOWNKEY]) {
 				choosingsequence += "v";
@@ -54,7 +56,7 @@ public class Controls implements KeyListener{
 			}
 		}
 	}
-	
+
 	public void keyReleased(KeyEvent e) {
 		
 	}

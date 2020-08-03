@@ -11,7 +11,7 @@ public class Player {
 	private Controls controls;
 	private int actionsTaken, actionsCap; //limit on actions per turn
 	public boolean isTurn; //whether it is this player's turn to act
-	public boolean canThrow; //whether player needs to throw a unit
+	public boolean awaiting; //if player is awaiting a sequence
 	public ArrayList<Unit> targets; //units that this player is targeting to capture
 	public Unit choice; //unit choice for this turn
 	private String sequence;
@@ -81,10 +81,16 @@ public class Player {
 	}
 	
 	public String sequence() {
+		if(sequence!=null)System.out.println(sequence);
 		return sequence;
+	}
+	public void startSequence() {
+		sequence = null;
+		awaiting = true;
 	}
 	public void endSequence() {
 		sequence = null;
+		awaiting = false;
 	}
 	public void sendSequence(String seq) {
 		sequence = seq;

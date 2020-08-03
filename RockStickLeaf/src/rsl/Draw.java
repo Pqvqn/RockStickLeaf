@@ -22,7 +22,7 @@ public class Draw extends JPanel{
 		game = g;
 		ui = new ArrayList<UIElement>();
 		inventories = new ArrayList<UIInventory>();
-		setPreferredSize(new Dimension(game.X_RESOL, game.Y_RESOL));
+		setPreferredSize(new Dimension(game.X_RESOL/3, game.Y_RESOL));
 		setBackground(Color.GRAY);
 	}
 	public void update(Graphics g) {

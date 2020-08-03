@@ -15,7 +15,6 @@ public class Game extends JFrame{
 	public Draw draw;
 	public ArrayList<Controls> controls;
 	public ArrayList<Player> players;
-	public ArrayList<Player> doneMove; //order in which players did moves
 	public int playerCount;
 	public MatchupLookup matchups;
 	public Map<String,Unit> units; //map: get unit object from its name as a string
@@ -88,6 +87,7 @@ public class Game extends JFrame{
 		System.out.println("Defaults are: "+def.substring(2));		
 		
 		boolean doGame = true;
+		ArrayList<Player> doneMove = players; //order in which players did move
 		while(doGame) {
 			
 			for(int i=doneMove.size()-1; i>=0; i--) {
@@ -105,12 +105,14 @@ public class Game extends JFrame{
 						if(p1.canAct()) {
 							switch(p1c) {
 							case "v": //crafting
+								System.out.println("Product: ");
 								Recipe craftr = getRecipe(retrieveSequence(p1),p1);
 								if(craftr!=null){
 									p1.craft(craftr);
 								}
 								break;
 							case ">": //capturing
+								System.out.println("Target: ");
 								p1.capture(otherPlayer(p1),units.get(retrieveSequence(p1)));
 								break;
 							case "":
@@ -139,11 +141,16 @@ public class Game extends JFrame{
 				freeze(1000);
 				System.out.println("GO");
 				doneMove = new ArrayList<Player>();
+				for(int i=0; i<players.size(); i++) {
+					players.get(i).choice = null;
+					players.get(i).startSequence();
+				}
 				while(doneMove.size()<players.size()) {
 					for(int i=0; i<players.size(); i++) {
 						if(!doneMove.contains(players.get(i)) && players.get(i).choice!=null) {
 							doneMove.add(players.get(i));
 							System.out.println(players.get(i).name+" LOCKED");
+							players.get(i).endSequence();
 						}
 					}
 				}
@@ -154,10 +161,7 @@ public class Game extends JFrame{
 				players.get(0).choice = null;
 				players.get(1).choice = null;
 			}
-			
-			
 		}
-		
 		try {
 			writeFiles();
 		} catch (IOException e) {
@@ -167,20 +171,6 @@ public class Game extends JFrame{
 		System.out.println("Game has ended");
 	}
 
-	public void playerThrows(Player p, Unit u) { //player throws a unit to battle
-		if(doneMove.contains(p))return;
-		p.canThrow = false;
-		doneMove.add(p);
-		p.choice = u;
-	}
-	
-	public Player otherPlayer(Player compare) {
-		for(Player p : players) {
-			if(!p.equals(compare))return p;
-		}
-		return null;
-	}
-	
 	private boolean doMatch(Player p1, Unit u1, Player p2, Unit u2) { //returns if match is successful; carries match out if can
 		if(!(p1.has(u1) && p2.has(u2)))return false;
 		if(u1.equals(u2)) {
@@ -245,7 +235,7 @@ public class Game extends JFrame{
 		System.out.println(p2);
 		System.out.println("TIE");
 	}
-	public void addNewUnit(Unit u) {
+	private void addNewUnit(Unit u) {
 		if(u instanceof DefaultUnit)defaults.add((DefaultUnit)u);
 		units.put(u.name,u);
 		unitorder.add(u);
@@ -313,7 +303,7 @@ public class Game extends JFrame{
 	
 	public Recipe getRecipe(String useq, Player p) { //given sequence for unit, have player choose/make a recipe
 		int n = decode(useq);
-		Unit craftu = (n<unitorder.size())?unitorder.get(n):null;
+		Unit craftu = (n>=0 && n<unitorder.size())?unitorder.get(n):null;
 		Recipe craftr = null;
 		while(craftu==null) {
 			System.out.println("New Unit: ");
@@ -431,7 +421,8 @@ public class Game extends JFrame{
 	}
 	
 	public String retrieveSequence(Player p) {
-		while(p.sequence()==null);
+		p.startSequence();
+		while(p.awaiting && p.sequence()==null);
 		String pc = p.sequence();
 		p.endSequence();
 		return pc;
