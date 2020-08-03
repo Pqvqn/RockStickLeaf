@@ -89,32 +89,70 @@ public class Game extends JFrame{
 		
 		boolean doGame = true;
 		while(doGame) {
-			doneMove = new ArrayList<Player>();
-			for(int i=0; i<players.size(); i++) {
-				players.get(i).canThrow = true;
-			}
-			System.out.println("3");
-			freeze(1000);
-			System.out.println("2");
-			freeze(1000);
-			System.out.println("1");
-			freeze(1000);
-			System.out.println("GO");
-			doneMove = new ArrayList<Player>();
-			while(doneMove.size()<players.size()) {
-			}
-				
-			System.out.println(players.get(0).choice.name +" v "+ players.get(1).choice.name);
-			System.out.println("DID: "+doMatch(players.get(0),players.get(0).choice,players.get(1),players.get(1).choice)+"\n");
-			draw.updateUIElement(draw.inventories);
-			draw.repaint();
-			players.get(0).choice = null;
-			players.get(1).choice = null;
 			
-			for(int i=0; i<doneMove.size(); i++) {
-				Player p = doneMove.get(i);
-				p.isTurn = true;
-				while(p.isTurn) {}
+			for(int i=doneMove.size()-1; i>=0; i--) {
+				Player p1 = doneMove.get(i);
+				p1.targets = new ArrayList<Unit>();
+				System.out.print(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
+				
+				p1.isTurn = true;
+				String p1c = retrieveSequence(p1);
+				
+				if(p1c.equals("<")) {
+					doGame = false;
+				}else {
+					while(p1.isTurn && p1c.length()>0) {
+						if(p1.canAct()) {
+							switch(p1c) {
+							case "v": //crafting
+								Recipe craftr = getRecipe(retrieveSequence(p1),p1);
+								if(craftr!=null){
+									p1.craft(craftr);
+								}
+								break;
+							case ">": //capturing
+								p1.capture(otherPlayer(p1),units.get(retrieveSequence(p1)));
+								break;
+							case "":
+								p1.isTurn = false;
+								break;
+							default:
+								break;
+							}
+							
+						}
+						System.out.print(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
+						draw.updateUIElement(draw.inventories);
+						draw.repaint();
+						p1c = retrieveSequence(p1);
+					}
+					p1.isTurn = false;
+				}
+			}
+			if(doGame) {
+			
+				System.out.println("3");
+				freeze(1000);
+				System.out.println("2");
+				freeze(1000);
+				System.out.println("1");
+				freeze(1000);
+				System.out.println("GO");
+				doneMove = new ArrayList<Player>();
+				while(doneMove.size()<players.size()) {
+					for(int i=0; i<players.size(); i++) {
+						if(!doneMove.contains(players.get(i)) && players.get(i).choice!=null) {
+							doneMove.add(players.get(i));
+							System.out.println(players.get(i).name+" LOCKED");
+						}
+					}
+				}
+				System.out.println(players.get(0).choice.name +" v "+ players.get(1).choice.name);
+				System.out.println("DID: "+doMatch(players.get(0),players.get(0).choice,players.get(1),players.get(1).choice)+"\n");
+				draw.updateUIElement(draw.inventories);
+				draw.repaint();
+				players.get(0).choice = null;
+				players.get(1).choice = null;
 			}
 			
 			
@@ -247,7 +285,12 @@ public class Game extends JFrame{
 		//printRecipes();
 		reader.close();
 	}
-	
+	public Player otherPlayer(Player compare) {
+		for(Player p : players) {
+			if(!p.equals(compare))return p;
+		}
+		return null;
+	}
 	/*private void printRecipes() { //prints out all recipes to console
 		Iterator<Unit> uniter = units.values().iterator();
 		while(uniter.hasNext()) {
@@ -268,24 +311,25 @@ public class Game extends JFrame{
 		return st;
 	}
 	
-	public Recipe getRecipe(String u) {
-		Unit craftu = units.get(u.substring(u.indexOf("#")+1));
+	public Recipe getRecipe(String useq, Player p) { //given sequence for unit, have player choose/make a recipe
+		int n = decode(useq);
+		Unit craftu = (n<unitorder.size())?unitorder.get(n):null;
 		Recipe craftr = null;
 		while(craftu==null) {
+			System.out.println("New Unit: ");
+			addNewUnit(craftu = new Unit(this,getConsoleInput()));
 			System.out.println("Recipe: ");
-			addNewUnit(new Unit(this,(u.substring(u.indexOf("#")+1))));
 			craftr = new Recipe(this,getConsoleInput());
-			craftu = units.get(u.substring(u.indexOf("#")+1));
 			recipes.add(craftr);
 		}
 		while(craftr==null) {
-			System.out.println("Choose Recipe:\n0: Cancel\n1: New");
+			System.out.println("Choose Recipe:\n"+encode(0)+": Cancel\n"+encode(1)+": New");
 			for(int i=0; i<craftu.recipes.size(); i++) {
 				Recipe r = craftu.recipes.get(i);
-				System.out.println((i+2)+": "+r);
+				System.out.println(encode(i+2)+": "+r);
 			}
 			try {
-				int ans = Integer.parseInt(getConsoleInput());
+				int ans = decode(retrieveSequence(p));
 				if(ans==0) {
 					return null;
 				}else if(ans==1) {
@@ -358,7 +402,6 @@ public class Game extends JFrame{
 
 		String ret = "";
 		number++;
-		//System.out.println(largestpower);
 		for(int i=0; number>0; i++) {
 			int larger = (int)(Math.pow(3,i+1));
 			int left = number%larger;
@@ -385,6 +428,13 @@ public class Game extends JFrame{
 		try {
 			Thread.sleep(millis);
 		}catch(InterruptedException e){};
+	}
+	
+	public String retrieveSequence(Player p) {
+		while(p.sequence()==null);
+		String pc = p.sequence();
+		p.endSequence();
+		return pc;
 	}
 	
 }
