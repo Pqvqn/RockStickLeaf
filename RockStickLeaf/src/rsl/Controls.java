@@ -13,33 +13,44 @@ public class Controls implements KeyListener{
 			{KeyEvent.VK_NUMPAD8,KeyEvent.VK_NUMPAD5,KeyEvent.VK_NUMPAD4,KeyEvent.VK_NUMPAD6}};
 	private final int UPKEY = 0, RIGHTKEY = 3, DOWNKEY = 1, LEFTKEY = 2;
 	private int scheme;
+	private String choosingsequence;
+	public String sequence;
 	
 	public Controls(Game g, Player body, int c) {
 		game = g;
 		player = body;
 		scheme = c;
+		choosingsequence = "";
+		sequence = null;
 	}
 	
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
+		if(player.sequence()==null)sequence=null;
 		if(player.isTurn) {
-			if(key == CONTROLSCHEMES[scheme][UPKEY]) { //end turn = ^
-				player.isTurn = false;
-			}else if(key == CONTROLSCHEMES[scheme][DOWNKEY]) { //craft = v
-				//player.isTurn = false;
-			}else if(key == CONTROLSCHEMES[scheme][RIGHTKEY]) { //capture = >
-				//player.isTurn = false;
-			}
-		}
-		if(player.choice == null) {
 			if(key == CONTROLSCHEMES[scheme][UPKEY]) {
-				player.completeDirKeys();
+				sequence = choosingsequence;
+				choosingsequence = "";
+				player.sendSequence(sequence);
 			}else if(key == CONTROLSCHEMES[scheme][DOWNKEY]) {
-				player.addDirKey("v");
+				choosingsequence += "v";
 			}else if(key == CONTROLSCHEMES[scheme][LEFTKEY]) {
-				player.addDirKey("<");
+				choosingsequence += "<";
 			}else if(key == CONTROLSCHEMES[scheme][RIGHTKEY]) {
-				player.addDirKey(">");
+				choosingsequence += ">";
+			}
+		}else if(player.choice == null){
+			if(key == CONTROLSCHEMES[scheme][UPKEY]) {
+				int num = game.decode(choosingsequence);
+				if(game.unitorder.size()>num && 0<=num && player.has(game.unitorder.get(num)))
+					player.choice = game.unitorder.get(num);
+				choosingsequence = "";
+			}else if(key == CONTROLSCHEMES[scheme][DOWNKEY]) {
+				choosingsequence += "v";
+			}else if(key == CONTROLSCHEMES[scheme][LEFTKEY]) {
+				choosingsequence += "<";
+			}else if(key == CONTROLSCHEMES[scheme][RIGHTKEY]) {
+				choosingsequence += ">";
 			}
 		}
 	}

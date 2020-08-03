@@ -13,14 +13,15 @@ public class Player {
 	public boolean isTurn; //whether it is this player's turn to act
 	public ArrayList<Unit> targets; //units that this player is targeting to capture
 	public Unit choice; //unit choice for this turn
-	private String choosing; //presses for choice
-
+	private String sequence;
 
 	public Player(Game g,String playername,File datafile,int id) {
 		game = g;
 		inventory = new Inventory(game,datafile);
 		name = playername;
 		controls = new Controls(game,this,id);
+		actionsCap = 3;
+		sequence = null;
 	}
 	
 	public boolean canCraft(Recipe r) {
@@ -72,13 +73,20 @@ public class Player {
 	public void take(Unit u,int quantity) {
 		give(u,-quantity);
 	}
-	public void addDirKey(String dirkey) {
-		choosing += dirkey;
-	}
-	public void completeDirKeys() {
-		int num = game.decode(choosing);
+	
+	public void makeChoice(String presses) {
+		int num = game.decode(presses);
 		choice = (num<0 || num>=game.unitorder.size() || !has(game.unitorder.get(num)))?null:game.unitorder.get(num);
-		choosing = "";
+	}
+	
+	public String sequence() {
+		return sequence;
+	}
+	public void endSequence() {
+		sequence = null;
+	}
+	public void sendSequence(String seq) {
+		sequence = seq;
 	}
 	
 	public boolean canAct() {
