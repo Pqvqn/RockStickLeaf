@@ -54,7 +54,7 @@ public class Controls implements KeyListener{
 			}
 		}
 	}
-
+	
 	public void keyReleased(KeyEvent e) {
 		
 	}

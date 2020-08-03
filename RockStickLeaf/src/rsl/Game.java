@@ -15,6 +15,7 @@ public class Game extends JFrame{
 	public Draw draw;
 	public ArrayList<Controls> controls;
 	public ArrayList<Player> players;
+	public ArrayList<Player> doneMove; //order in which players did moves
 	public int playerCount;
 	public MatchupLookup matchups;
 	public Map<String,Unit> units; //map: get unit object from its name as a string
@@ -87,7 +88,6 @@ public class Game extends JFrame{
 		System.out.println("Defaults are: "+def.substring(2));		
 		
 		boolean doGame = true;
-		ArrayList<Player> doneMove = players; //order in which players did move
 		while(doGame) {
 			
 			for(int i=doneMove.size()-1; i>=0; i--) {
@@ -154,7 +154,10 @@ public class Game extends JFrame{
 				players.get(0).choice = null;
 				players.get(1).choice = null;
 			}
+			
+			
 		}
+		
 		try {
 			writeFiles();
 		} catch (IOException e) {
@@ -164,6 +167,20 @@ public class Game extends JFrame{
 		System.out.println("Game has ended");
 	}
 
+	public void playerThrows(Player p, Unit u) { //player throws a unit to battle
+		if(doneMove.contains(p))return;
+		p.canThrow = false;
+		doneMove.add(p);
+		p.choice = u;
+	}
+	
+	public Player otherPlayer(Player compare) {
+		for(Player p : players) {
+			if(!p.equals(compare))return p;
+		}
+		return null;
+	}
+	
 	private boolean doMatch(Player p1, Unit u1, Player p2, Unit u2) { //returns if match is successful; carries match out if can
 		if(!(p1.has(u1) && p2.has(u2)))return false;
 		if(u1.equals(u2)) {
@@ -228,7 +245,7 @@ public class Game extends JFrame{
 		System.out.println(p2);
 		System.out.println("TIE");
 	}
-	private void addNewUnit(Unit u) {
+	public void addNewUnit(Unit u) {
 		if(u instanceof DefaultUnit)defaults.add((DefaultUnit)u);
 		units.put(u.name,u);
 		unitorder.add(u);

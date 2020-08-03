@@ -11,6 +11,7 @@ public class Player {
 	private Controls controls;
 	private int actionsTaken, actionsCap; //limit on actions per turn
 	public boolean isTurn; //whether it is this player's turn to act
+	public boolean canThrow; //whether player needs to throw a unit
 	public ArrayList<Unit> targets; //units that this player is targeting to capture
 	public Unit choice; //unit choice for this turn
 	private String sequence;
