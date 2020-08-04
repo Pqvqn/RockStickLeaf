@@ -113,7 +113,7 @@ public class Game extends JFrame{
 								break;
 							case ">": //capturing
 								System.out.println("Target: ");
-								p1.capture(otherPlayer(p1),units.get(retrieveSequence(p1)));
+								p1.capture(otherPlayer(p1),unitorder.get(decode(retrieveSequence(p1))));
 								break;
 							case "":
 								p1.isTurn = false;

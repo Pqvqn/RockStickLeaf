@@ -54,6 +54,7 @@ public class Player {
 		if(enemy.has(target)) {
 			targets.add(target);
 			enemy.take(target);
+			System.out.println(target.name+" taken hostage");
 			act();
 		}
 	}
