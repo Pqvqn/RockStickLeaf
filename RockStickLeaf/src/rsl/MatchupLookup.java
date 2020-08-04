@@ -30,9 +30,36 @@ public class MatchupLookup {
 		return victor(new Matchup(new Unit[] {a,b}));
 	}
 	public void createMatch(Matchup m) { //gets player input to determine winner
+		String seq = null;
 		System.out.println("Winner of "+m+" is:");
-		String w = game.getConsoleInput();
-		addResult(m,game.units.get(w));
+		while(seq == null) { //while no agreement between players on winner
+			for(int i=0; i<game.players.size(); i++) { //for each player, ask winner, proceed when there is a consensus
+				Player p = game.players.get(i);
+				System.out.println(p.name+": ");
+				p.isTurn = true;
+				String resp = game.retrieveSequence(p);
+				p.isTurn = false;
+				if(seq==null) {
+					seq = resp;
+				}else {
+					if(!seq.equals(resp)) {
+						seq = null;
+					}
+				}
+			}
+			if(seq!=null) { //test if chosen sequence corresponds to a contender
+				boolean ok = false;
+				for(Unit u:m.contenders()) {
+					if(game.unitorder.get(game.decode(seq)).equals(u)) {
+						ok = true;
+					}
+				}
+				if(!ok)seq = null;
+			}
+		}
+		Unit u = game.unitorder.get(game.decode(seq));
+		System.out.println(u.name +" is victor of "+m);
+		addResult(m,u);
 	}
 	public void addResult(Matchup m, Unit victor) {
 		table.put(m,victor);

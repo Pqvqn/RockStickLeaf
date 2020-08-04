@@ -82,7 +82,7 @@ public class Player {
 	}
 	
 	public String sequence() {
-		if(sequence!=null)System.out.println(sequence);
+		//if(sequence!=null)System.out.println(sequence);
 		return sequence;
 	}
 	public void startSequence() {

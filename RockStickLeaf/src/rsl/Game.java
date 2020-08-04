@@ -93,7 +93,7 @@ public class Game extends JFrame{
 			for(int i=doneMove.size()-1; i>=0; i--) {
 				Player p1 = doneMove.get(i);
 				p1.targets = new ArrayList<Unit>();
-				System.out.print(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
+				System.out.println(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
 				
 				p1.isTurn = true;
 				String p1c = retrieveSequence(p1);
@@ -123,7 +123,7 @@ public class Game extends JFrame{
 							}
 							
 						}
-						System.out.print(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
+						System.out.println(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
 						draw.updateUIElement(draw.inventories);
 						draw.repaint();
 						p1c = retrieveSequence(p1);
@@ -422,7 +422,9 @@ public class Game extends JFrame{
 	
 	public String retrieveSequence(Player p) {
 		p.startSequence();
-		while(p.awaiting && p.sequence()==null);
+		while(p.awaiting && p.sequence()==null) {
+			freeze(1); //chill
+		}
 		String pc = p.sequence();
 		p.endSequence();
 		return pc;

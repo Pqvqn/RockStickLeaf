@@ -24,7 +24,7 @@ public class Controls implements KeyListener{
 		sequence = null;
 	}
 	
-	public void keyPressed(KeyEvent e) {
+	public void keyPressed(KeyEvent e){
 		int key = e.getKeyCode();
 		if(!player.awaiting)return;
 		
