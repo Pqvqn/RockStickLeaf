@@ -42,6 +42,9 @@ public class Game extends JFrame{
 		}
 		matchups = new MatchupLookup(this,new File(filepath+"/matchups.txt"));
 		
+		Unit uuu = unitorder.get((int)(Math.random()*unitorder.size()));
+		System.out.println(uuu.name+" "+uuu.complexity());
+		
 		//engine classes
 		playerCount = playerNum;
 		players = new ArrayList<Player>();
@@ -329,7 +332,8 @@ public class Game extends JFrame{
 					recipes.add(craftr);
 					return craftr;
 				}else {
-					craftr = craftu.recipes.get(ans-2);
+					if(craftu.recipes.size()>ans-2)
+						craftr = craftu.recipes.get(ans-2);
 				}
 			}catch (NumberFormatException e) {
 				
