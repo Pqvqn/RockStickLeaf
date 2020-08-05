@@ -52,6 +52,7 @@ public class Game extends JFrame{
 			draw.inventories.add(new UIInventory(this,70+i*300,100,20,players.get(i)));
 		}	
 		draw.match = new UIMatch(this,X_RESOL/2,Y_RESOL-100,50,players);
+		draw.catalogue = new UICatalogue(this,50,Y_RESOL/2+100,10,25);
 		
 		controls = new ArrayList<Controls>();
 		for(int i=0; i<players.size(); i++) {
@@ -124,8 +125,6 @@ public class Game extends JFrame{
 							
 						}
 						System.out.println(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
-						draw.updateUIElement(draw.inventories);
-						draw.repaint();
 						p1c = retrieveSequence(p1);
 					}
 					p1.isTurn = false;
@@ -156,8 +155,6 @@ public class Game extends JFrame{
 				}
 				System.out.println(players.get(0).choice.name +" v "+ players.get(1).choice.name);
 				System.out.println("DID: "+doMatch(players.get(0),players.get(0).choice,players.get(1),players.get(1).choice)+"\n");
-				draw.updateUIElement(draw.inventories);
-				draw.repaint();
 				players.get(0).choice = null;
 				players.get(1).choice = null;
 			}
@@ -239,6 +236,10 @@ public class Game extends JFrame{
 		if(u instanceof DefaultUnit)defaults.add((DefaultUnit)u);
 		units.put(u.name,u);
 		unitorder.add(u);
+		if(draw.catalogue!=null) {
+			draw.updateUIElement(draw.catalogue);
+			draw.repaint();
+		}
 	}
 	private void createUnits() throws IOException { //builds all unit types from file
 		unitorder = new ArrayList<Unit>();
