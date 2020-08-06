@@ -8,10 +8,9 @@ public class Player {
 	private Game game;
 	private Inventory inventory;
 	public String name;
-	//private Controls controls;
+	private Controls controls;
 	private int actionsTaken, actionsCap; //limit on actions per turn
 	public boolean isTurn; //whether it is this player's turn to act
-	public boolean awaiting; //if player is awaiting a sequence
 	public ArrayList<Unit> targets; //units that this player is targeting to capture
 	public Unit choice; //unit choice for this turn
 	private String sequence;
@@ -20,7 +19,8 @@ public class Player {
 		game = g;
 		inventory = new Inventory(game,datafile);
 		name = playername;
-		//controls = new Controls(this,id);
+		controls = new Controls(this,id);
+		game.controls.add(controls);
 		actionsCap = 3;
 		sequence = null;
 	}
@@ -86,11 +86,11 @@ public class Player {
 	}
 	public void startSequence() { //begin collecting sequence
 		sequence = null;
-		awaiting = true;
+		controls.startSequence();
 	}
 	public void endSequence() { //stop collecting sequence
 		sequence = null;
-		awaiting = false;
+		controls.endSequence();
 	}
 	public void sendSequence(String seq) { //submit sequence after it is typed
 		sequence = seq;
@@ -117,6 +117,7 @@ public class Player {
 		inventory.writeFile();
 	}
 	public String toString() {
-		return name+"\n"+inventory.toString();
+		return name;
+		//return name+"\n"+inventory.toString();
 	}
 }

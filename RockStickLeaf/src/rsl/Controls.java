@@ -15,6 +15,7 @@ public class Controls implements KeyListener{
 	private int scheme;
 	private String choosingsequence;
 	public String sequence;
+	public boolean awaiting;
 	
 	public Controls(Player body, int c) {
 		//game = g;
@@ -22,38 +23,40 @@ public class Controls implements KeyListener{
 		scheme = c;
 		choosingsequence = "";
 		sequence = null;
+		awaiting = false;
 	}
+	
+	public void startSequence() {
+		sequence = null;
+		awaiting = true;
+	}
+	public void endSequence() {
+		sequence = null;
+		awaiting = false;
+	}
+	
 	
 	public void keyPressed(KeyEvent e){
 		int key = e.getKeyCode();
-		if(!player.awaiting)return; //if player doesn't need to input, don't get a sequence
+		if(!awaiting)return; //if player doesn't need to input, don't get a sequence
 		
-		if(player.isTurn) { //build sequence for turn actions
-			if(!player.awaiting) {
-				return;
-			}
-			if(key == CONTROLSCHEMES[scheme][UPKEY]) {
+		if(key == CONTROLSCHEMES[scheme][UPKEY]) {
+			if(player.isTurn) { //build sequence for turn actions
 				sequence = choosingsequence;
 				choosingsequence = "";
 				player.sendSequence(sequence);
-			}else if(key == CONTROLSCHEMES[scheme][DOWNKEY]) {
-				choosingsequence += "v";
-			}else if(key == CONTROLSCHEMES[scheme][LEFTKEY]) {
-				choosingsequence += "<";
-			}else if(key == CONTROLSCHEMES[scheme][RIGHTKEY]) {
-				choosingsequence += ">";
+			}else if(player.choice == null){ //build sequence to be thrown
+				if(key == CONTROLSCHEMES[scheme][UPKEY]) {
+					player.makeChoice(choosingsequence);
+					choosingsequence = "";
+				}
 			}
-		}else if(player.choice == null){ //build sequence to be thrown
-			if(key == CONTROLSCHEMES[scheme][UPKEY]) {
-				player.makeChoice(choosingsequence);
-				choosingsequence = "";
-			}else if(key == CONTROLSCHEMES[scheme][DOWNKEY]) {
-				choosingsequence += "v";
-			}else if(key == CONTROLSCHEMES[scheme][LEFTKEY]) {
-				choosingsequence += "<";
-			}else if(key == CONTROLSCHEMES[scheme][RIGHTKEY]) {
-				choosingsequence += ">";
-			}
+		}else if(key == CONTROLSCHEMES[scheme][DOWNKEY]) {
+			choosingsequence += "v";
+		}else if(key == CONTROLSCHEMES[scheme][LEFTKEY]) {
+			choosingsequence += "<";
+		}else if(key == CONTROLSCHEMES[scheme][RIGHTKEY]) {
+			choosingsequence += ">";
 		}
 	}
 

@@ -44,6 +44,7 @@ public class Game extends JFrame{
 		
 		
 		//engine classes
+		controls = new ArrayList<Controls>();
 		playerCount = playerNum;
 		players = new ArrayList<Player>();
 		for(int i=0; i<playerCount; i++) { //create each player
@@ -55,12 +56,6 @@ public class Game extends JFrame{
 		//create ui
 		draw.match = new UIMatch(this,X_RESOL/2,Y_RESOL-100,50,players);
 		draw.catalogue = new UICatalogue(this,50,Y_RESOL/2+100,10,25);
-		
-		//TODO: fix this garbage (two controls instances?? one in player class, one here)
-		controls = new ArrayList<Controls>();
-		for(int i=0; i<players.size(); i++) {
-			controls.add(new Controls(players.get(i),i));
-		}
 		
 		//window settings
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -116,8 +111,13 @@ public class Game extends JFrame{
 								}
 								break;
 							case ">": //> = capturing
-								System.out.println("Target: ");
-								p1.capture(otherPlayer(p1),unitorder.get(decode(retrieveSequence(p1))));
+								Unit u = null;
+								while(u == null){ //ask for target until valid one given
+									System.out.println("Target: ");
+									int t = decode(retrieveSequence(p1));
+									u = (t<unitorder.size() && t>=0)?unitorder.get(t):null;
+								}
+								p1.capture(otherPlayer(p1),u);
 								break;
 							case "": //^ only = end turn
 								p1.isTurn = false;
@@ -446,7 +446,7 @@ public class Game extends JFrame{
 	
 	public String retrieveSequence(Player p) { //returns a string sequence of dir keys pressed by player
 		p.startSequence();
-		while(p.awaiting && p.sequence()==null) {
+		while(p.sequence()==null) {
 			freeze(1); //chill
 		}
 		String pc = p.sequence();
