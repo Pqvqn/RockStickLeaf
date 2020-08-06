@@ -7,6 +7,7 @@ public class Unit {
 	protected Game game;
 	public ArrayList<Recipe> recipes;
 	public String name;
+	public int lastComplexity;
 	
 	public Unit(Game g, String unitname) {
 		game = g;
@@ -15,7 +16,8 @@ public class Unit {
 	}
 	
 	public int complexity() {//least amount of separate items required to craft (defaults + all mid-level items)
-		return complexity(new ArrayList<Unit>());
+		lastComplexity = complexity(new ArrayList<Unit>());
+		return lastComplexity;
 	}
 	
 	public int complexity(ArrayList<Unit> branch) { //complexity with list of units to avoid recipes with (to prevent loops). returns -1 if looped

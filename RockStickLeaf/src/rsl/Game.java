@@ -42,8 +42,8 @@ public class Game extends JFrame{
 		}
 		matchups = new MatchupLookup(this,new File(filepath+"/matchups.txt"));
 		
-		Unit uuu = unitorder.get((int)(Math.random()*unitorder.size()));
-		System.out.println(uuu.name+" "+uuu.complexity());
+		//Unit uuu = unitorder.get((int)(Math.random()*unitorder.size()));
+		//System.out.println(uuu.name+" "+uuu.complexity());
 		
 		//engine classes
 		playerCount = playerNum;
@@ -169,6 +169,7 @@ public class Game extends JFrame{
 			e.printStackTrace();
 		}
 		System.out.println("Game has ended");
+		System.exit(0);
 	}
 
 	private boolean doMatch(Player p1, Unit u1, Player p2, Unit u2) { //returns if match is successful; carries match out if can
@@ -346,8 +347,41 @@ public class Game extends JFrame{
 		//units
 		File unitFile = new File(filepath+"/units.txt");
 		FileWriter unitWriter = new FileWriter(unitFile);
-		for(Unit u : unitorder) { //list unit names in order, start with : if default
-			unitWriter.write((u instanceof DefaultUnit ? ":" : "") + u.name+"\n");
+		ArrayList<Unit> reorder = new ArrayList<Unit>();
+		for(Unit u : unitorder) { //reorder units based on complexity
+			if(reorder.isEmpty()) { //if first, just add
+				reorder.add(u);
+				u.complexity(); //make sure complexity is calculated
+			}else {
+				int left = 0; //set left and right bounds
+				int right = reorder.size();
+				int comp = u.complexity();
+				while(right-left>1) { //while not zeroed in on correct placement
+					int divider = (right-left)/2+left; //dividing index
+					if(reorder.get(divider).lastComplexity<comp) {//test if complexity is lower or higher than divider, adjust range
+						left = divider;
+					}else if (reorder.get(divider).lastComplexity>comp){
+						right = divider;
+					}else {
+						if(unitorder.indexOf(u)<unitorder.indexOf(reorder.get(divider))) { //if same complexity, use original ordering
+							right = divider;
+						}else {
+							left = divider;
+						}
+					}
+				}
+				if(reorder.get(0).lastComplexity>comp) { //make sure first index can be replaced
+					reorder.add(0,u);
+				}else if(right<reorder.size() && reorder.get(right).lastComplexity<comp) { //place relative to right side
+					reorder.add(right+1,u);
+				}else {
+					reorder.add(right,u);
+				}
+
+			}
+		}
+		for(Unit u : reorder) { //list unit names in order, start with : if default
+			unitWriter.write((u instanceof DefaultUnit ? ":" : "")+u.name+"\n");
 		}
 		unitWriter.close();
 		
