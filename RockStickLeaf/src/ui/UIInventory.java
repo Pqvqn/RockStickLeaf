@@ -15,8 +15,8 @@ public class UIInventory extends UIElement{
 		super(frame,x,y);
 		inv = p.getInventory();
 		size = sz;
-		unitlist = new ArrayList<UIUnit>();
-		parts.add(new UIText(game,xPos,yPos-size*2,p.name,Color.WHITE,new Font("Arial",Font.BOLD,size*2)));
+		unitlist = new ArrayList<UIUnit>(); //list of units being displayed
+		parts.add(new UIText(game,xPos,yPos-size*2,p.name,Color.WHITE,new Font("Arial",Font.BOLD,size*2))); //player name
 		update();
 	}
 	

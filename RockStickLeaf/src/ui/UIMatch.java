@@ -1,7 +1,6 @@
 package ui;
 
 import java.util.*;
-import java.awt.*;
 
 import rsl.*;
 
@@ -15,7 +14,7 @@ public class UIMatch extends UIElement{
 		size = sz;
 		
 		playerUI = new ArrayList<UIPlayer>();
-		for(int i=0; i<p.size(); i++) {
+		for(int i=0; i<p.size(); i++) { //add players, alternating side that they are on
 			UIPlayer np = new UIPlayer(game,xPos+((i%2==0)?-500:500),yPos,size,(i%2==0)?UIPlayer.RIGHT:UIPlayer.LEFT,p.get(i));
 			parts.add(np);
 			playerUI.add(np);

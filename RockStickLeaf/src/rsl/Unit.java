@@ -21,10 +21,10 @@ public class Unit {
 	}
 	
 	public int complexity(ArrayList<Unit> branch) { //complexity with list of units to avoid recipes with (to prevent loops). returns -1 if looped
-		if(branch.contains(this))return -1;
+		if(branch.contains(this))return -1; //abort if recipe already looked into
 		int[] opt = complexityAll(branch);
 		int least = opt[0];
-		for(int i : opt) {
+		for(int i : opt) { //find smallest complexity of recipe options
 			if((i<least || least<0) && i>=0)least = i;
 		}
 		return least;
@@ -42,8 +42,6 @@ public class Unit {
 					for(Unit a : branch)nbranch.add(a);
 					nbranch.add(this);
 					int com = u.complexity(nbranch);
-					//for(Unit u22 : nbranch)System.out.print(":");
-					//System.out.println(u.name+com);
 					if(com < 0)valid = false; //if canceled because of loop, cancel this value
 					ret[i] += (com+1)*recipes.get(i).materials.get(u); //recursively add each material's complexity, +1 for the material itself
 				}

@@ -33,11 +33,11 @@ public class Recipe {
 		materials = new HashMap<Unit,Integer>();
 		products = new HashMap<Unit,Integer>();
 		if(r==null)return;
-		String[] components = r.split(":");
+		String[] components = r.split(":"); //split materials from products and make maps of them
 		stringToMap(components[0],products);
 		stringToMap(components[1],materials);
 		Iterator<Unit> uniter = productsIterator();
-		while(uniter.hasNext()) {
+		while(uniter.hasNext()) { //add this recipe to all products' list of recipes
 			uniter.next().recipes.add(this);
 		}
 		
@@ -62,7 +62,7 @@ public class Recipe {
 		}
 	}
 	
-	public String toString() {
+	public String toString() { //returns recipe as string, formatted as Product1,Product2*Quantity,Product3...:Material1,Material2*Quantity,Material3...
 		String ret = "";
 		Iterator<Unit> p = productsIterator();
 		while(p.hasNext()) {

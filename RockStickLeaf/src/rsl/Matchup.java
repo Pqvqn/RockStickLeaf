@@ -13,7 +13,7 @@ public class Matchup {
 	}
 	
 	@Override
-	public boolean equals(Object o) { //overrides equals; is this the same matchup
+	public boolean equals(Object o) { //overrides equals; is this the same matchup (same contenders)
 		if(!(o instanceof Matchup))
 			return false;
 		Matchup other = (Matchup)o;
@@ -27,7 +27,7 @@ public class Matchup {
 	}
 	
 	@Override
-	public int hashCode() {//overrides hashcode
+	public int hashCode() { //overrides hashcode; done by using hashcode of string of contender1#contender2 (alphabetical order)
 		if(units[0].name.compareTo(units[1].name) >= 0) {
 			return(units[0].name+"#"+units[1].name).hashCode();
 		}else {

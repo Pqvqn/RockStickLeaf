@@ -4,7 +4,7 @@ import java.awt.event.*;
 
 public class Controls implements KeyListener{
 
-	private Game game;
+	//private Game game;
 	private Player player;
 	//controls for each player added
 	private final int[][] CONTROLSCHEMES = {{KeyEvent.VK_UP,KeyEvent.VK_DOWN,KeyEvent.VK_LEFT,KeyEvent.VK_RIGHT},
@@ -16,8 +16,8 @@ public class Controls implements KeyListener{
 	private String choosingsequence;
 	public String sequence;
 	
-	public Controls(Game g, Player body, int c) {
-		game = g;
+	public Controls(Player body, int c) {
+		//game = g;
 		player = body;
 		scheme = c;
 		choosingsequence = "";
@@ -26,9 +26,9 @@ public class Controls implements KeyListener{
 	
 	public void keyPressed(KeyEvent e){
 		int key = e.getKeyCode();
-		if(!player.awaiting)return;
+		if(!player.awaiting)return; //if player doesn't need to input, don't get a sequence
 		
-		if(player.isTurn) {
+		if(player.isTurn) { //build sequence for turn actions
 			if(!player.awaiting) {
 				return;
 			}
@@ -43,7 +43,7 @@ public class Controls implements KeyListener{
 			}else if(key == CONTROLSCHEMES[scheme][RIGHTKEY]) {
 				choosingsequence += ">";
 			}
-		}else if(player.choice == null){
+		}else if(player.choice == null){ //build sequence to be thrown
 			if(key == CONTROLSCHEMES[scheme][UPKEY]) {
 				player.makeChoice(choosingsequence);
 				choosingsequence = "";

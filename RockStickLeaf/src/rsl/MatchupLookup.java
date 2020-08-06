@@ -20,7 +20,7 @@ public class MatchupLookup {
 		}
 	}
 	
-	public Unit victor(Matchup m) {
+	public Unit victor(Matchup m) { //winner of matchup
 		if(!table.containsKey(m)) {
 			createMatch(m);
 		}
@@ -39,10 +39,10 @@ public class MatchupLookup {
 				p.isTurn = true;
 				String resp = game.retrieveSequence(p);
 				p.isTurn = false;
-				if(seq==null) {
+				if(seq==null) { //first ask
 					seq = resp;
 				}else {
-					if(!seq.equals(resp)) {
+					if(!seq.equals(resp)) { //keep asking if no consensus
 						seq = null;
 					}
 				}
@@ -72,13 +72,13 @@ public class MatchupLookup {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(data),"UTF-8"));
 		String curr = reader.readLine();
 		while(curr!=null) { //add all units to hashmap
-			String[] contenders = curr.split(">|<|=");
+			String[] contenders = curr.split(">|<|="); //split contenders by comparison symbol
 			Unit[] units = new Unit[contenders.length];
 			for(int i=0; i<contenders.length; i++) {
 				units[i] = game.units.get(contenders[i]);
 			}
 			Matchup m = new Matchup(units);
-			if(curr.contains(">")) {
+			if(curr.contains(">")) { //get winner based on symbol used
 				addResult(m,units[0]);
 			}else if(curr.contains("<")) {
 				addResult(m,units[1]);

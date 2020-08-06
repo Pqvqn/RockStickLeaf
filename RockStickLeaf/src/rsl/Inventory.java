@@ -20,14 +20,14 @@ public class Inventory {
 		}
 	}
 	
-	public Integer numberOf(Unit u) {
+	public Integer numberOf(Unit u) { //number of unit that this player has
 		if(!inventory.containsKey(u))return 0;
 		return inventory.get(u);
 	}
 	public void addUnits(Unit u,int quantity) {
-		if(!inventory.containsKey(u))inventory.put(u,0);
-		inventory.put(u,inventory.get(u)+quantity);
-		game.draw.updateUIElement(game.draw.inventories);
+		if(!inventory.containsKey(u))inventory.put(u,0); //add unit to catalogue if missing
+		inventory.put(u,inventory.get(u)+quantity); //add quantity to current number
+		game.draw.updateUIElement(game.draw.inventories); //update ui accordingly
 		game.draw.repaint();
 	}
 	
@@ -60,7 +60,7 @@ public class Inventory {
 		inventoryWriter.close();
 	}
 	
-	public String toString() {
+	public String toString() { //writes to file in form of Unit1 (line break) Unit2*Quantity
 		Iterator<Unit> uniter = inventory.keySet().iterator();
 		String s = "";
 		while(uniter.hasNext()) {

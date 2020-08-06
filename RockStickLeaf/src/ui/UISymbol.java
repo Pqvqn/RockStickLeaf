@@ -31,14 +31,14 @@ public class UISymbol extends UIElement{
 	public void paint(Graphics g) {
 		g.setColor(color_primary);
 		Graphics2D g2 = (Graphics2D)g;
-		AffineTransform origt = g2.getTransform();
+		AffineTransform origt = g2.getTransform(); //transformation to reset to
 	
-		if(symbol.equals("v") || symbol.equals("<") || symbol.equals(">")){
-			g.setColor(color_secondary);
+		if(symbol.equals("v") || symbol.equals("<") || symbol.equals(">")){ //for arrows
+			g.setColor(color_secondary); //draw arrow
 			g2.rotate(Math.PI/4,xPos,yPos);
-			g2.drawRect(xPos-size/2, yPos-size/2, size, size);
+			g2.drawRect(xPos-size/2, yPos-size/2, size, size); //draw outline behind arrow
 			g.setColor(color_primary);
-			switch(symbol) {
+			switch(symbol) { //rotate depending on arrow needed
 			case "v":
 				g2.rotate(Math.PI,xPos,yPos);
 				break;
@@ -48,8 +48,11 @@ public class UISymbol extends UIElement{
 			case ">":
 				g2.rotate(Math.PI/2,xPos,yPos);
 				break;
+			case "^":
+				//g2.rotate(0,xPos,yPos);
+				break;
 			}
-			g2.fillRect(xPos-size/2,yPos-size/2,size,size/3);
+			g2.fillRect(xPos-size/2,yPos-size/2,size,size/3); //draw rectangles for arrow
 			g2.fillRect(xPos-size/2,yPos-size/2,size/3,size);
 			
 		}

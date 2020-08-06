@@ -8,7 +8,7 @@ public class Player {
 	private Game game;
 	private Inventory inventory;
 	public String name;
-	private Controls controls;
+	//private Controls controls;
 	private int actionsTaken, actionsCap; //limit on actions per turn
 	public boolean isTurn; //whether it is this player's turn to act
 	public boolean awaiting; //if player is awaiting a sequence
@@ -20,12 +20,12 @@ public class Player {
 		game = g;
 		inventory = new Inventory(game,datafile);
 		name = playername;
-		controls = new Controls(game,this,id);
+		//controls = new Controls(this,id);
 		actionsCap = 3;
 		sequence = null;
 	}
 	
-	public boolean canCraft(Recipe r) {
+	public boolean canCraft(Recipe r) { //if player has sufficient materials to craft a recipe
 		Iterator<Unit> uniter = r.materialsIterator();
 		while(uniter.hasNext()) {
 			Unit b = uniter.next();
@@ -34,15 +34,15 @@ public class Player {
 		return true;
 	}
 	
-	public void craft(Recipe r) {
+	public void craft(Recipe r) { //crafts recipe
 		if(!canCraft(r))return;
 		Iterator<Unit> uniter = r.materialsIterator();
-		while(uniter.hasNext()) {
+		while(uniter.hasNext()) { //take materials
 			Unit b = uniter.next();
 			take(b,r.materials.get(b));
 		}
 		Iterator<Unit> uniter2 = r.productsIterator();
-		while(uniter2.hasNext()) {
+		while(uniter2.hasNext()) { //add products
 			Unit b = uniter2.next();
 			give(b,r.products.get(b));
 		}
@@ -50,7 +50,7 @@ public class Player {
 		System.out.println("Successfully crafted");
 	}
 	
-	public void capture(Player enemy, Unit target) {
+	public void capture(Player enemy, Unit target) { //takes targeted opponent unit temporarily; adds to target list
 		if(enemy.has(target)) {
 			targets.add(target);
 			enemy.take(target);
@@ -59,7 +59,7 @@ public class Player {
 		}
 	}
 	
-	public boolean has(Unit u) {
+	public boolean has(Unit u) { //if player owns at least one of unit
 		if(u instanceof DefaultUnit)return true;
 		return inventory.numberOf(u)>0;
 	}
@@ -76,28 +76,27 @@ public class Player {
 		give(u,-quantity);
 	}
 	
-	public void makeChoice(String presses) {
+	public void makeChoice(String presses) { //turns presses into unit choice when throwing units
 		int num = game.decode(presses);
 		choice = (num<0 || num>=game.unitorder.size() || !has(game.unitorder.get(num)))?null:game.unitorder.get(num);
 	}
 	
-	public String sequence() {
-		//if(sequence!=null)System.out.println(sequence);
+	public String sequence() { //returns current sent sequence
 		return sequence;
 	}
-	public void startSequence() {
+	public void startSequence() { //begin collecting sequence
 		sequence = null;
 		awaiting = true;
 	}
-	public void endSequence() {
+	public void endSequence() { //stop collecting sequence
 		sequence = null;
 		awaiting = false;
 	}
-	public void sendSequence(String seq) {
+	public void sendSequence(String seq) { //submit sequence after it is typed
 		sequence = seq;
 	}
 	
-	public boolean canAct() {
+	public boolean canAct() { //if player can continue to craft, capture, etc. this turn
 		return actionsTaken < actionsCap;
 	}
 	public void act() {

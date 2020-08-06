@@ -1,6 +1,5 @@
 package ui;
 
-import java.util.*;
 import java.awt.*;
 
 import rsl.*;
@@ -17,7 +16,7 @@ public class UIPlayer extends UIElement{
 		player = p;
 		size = sz;
 		orient = orientation;
-		parts.add(new UIText(game,xPos-p.name.length()/2*size,yPos-size*2,p.name,Color.WHITE,new Font("Arial",Font.BOLD,size*2)));
+		parts.add(new UIText(game,xPos-player.name.length()/2*size,yPos-size*2,player.name,Color.WHITE,new Font("Arial",Font.BOLD,size*2)));
 		update();
 	}
 	
