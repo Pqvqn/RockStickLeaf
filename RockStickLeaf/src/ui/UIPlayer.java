@@ -31,6 +31,9 @@ public class UIPlayer extends UIElement{
 			String actionstext = player.actionsTaken()+"/"+player.actionsCap()+" actions";
 			actions.setText(actionstext);
 			actions.setxPos(xPos-actionstext.length()/2*(size/2));
+		}else if(player.choice!=null) {
+			name.setColor(Color.CYAN);
+			actions.setText("");
 		}else {
 			name.setColor(Color.WHITE);
 			actions.setText("");

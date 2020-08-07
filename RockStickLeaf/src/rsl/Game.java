@@ -135,11 +135,15 @@ public class Game extends JFrame{
 			if(doGame) {
 				//countdown for throw
 				System.out.println("3");
+				draw.match.count(3,true);
 				freeze(1000);
 				System.out.println("2");
+				draw.match.count(2,true);
 				freeze(1000);
 				System.out.println("1");
+				draw.match.count(1,true);
 				freeze(1000);
+				draw.match.count(0,true);
 				System.out.println("GO");
 				doneMove = new ArrayList<Player>();
 				for(int i=0; i<players.size(); i++) { //prepare players
@@ -155,6 +159,7 @@ public class Game extends JFrame{
 						}
 					}
 				}
+				draw.match.count(0,false);
 				System.out.println(players.get(0).choice.name +" v "+ players.get(1).choice.name);
 				System.out.println("DID: "+doMatch(players.get(0),players.get(0).choice,players.get(1),players.get(1).choice)+"\n");
 				players.get(0).choice = null;
