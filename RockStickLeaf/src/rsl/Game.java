@@ -88,7 +88,6 @@ public class Game extends JFrame{
 		boolean doGame = true;
 		ArrayList<Player> doneMove = players; //order in which players did move
 		while(doGame) {
-			
 			for(int i=doneMove.size()-1; i>=0; i--) { //let each player take their turn
 				Player p1 = doneMove.get(i); //in order of who did turn last
 				p1.targets = new ArrayList<Unit>(); //reset targets
@@ -233,6 +232,13 @@ public class Game extends JFrame{
 		if(!(p2u instanceof DefaultUnit))p2.take(p2u);
 		p1.give(p2u); //give each player the other player's unit
 		p2.give(p1u);
+		for(Unit hostage : p1.targets) { //give hostages back to owner
+			p2.give(hostage);
+		}
+		for(Unit hostage : p2.targets) { //give hostages back to owner
+			p1.give(hostage);
+		}
+		
 		System.out.println(p1);
 		System.out.println(p2);
 		System.out.println("TIE");

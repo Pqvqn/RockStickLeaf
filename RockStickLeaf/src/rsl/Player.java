@@ -19,7 +19,7 @@ public class Player {
 		game = g;
 		inventory = new Inventory(game,datafile);
 		name = playername;
-		controls = new Controls(this,id);
+		controls = new Controls(game,this,id);
 		game.controls.add(controls);
 		actionsCap = 3;
 		sequence = null;

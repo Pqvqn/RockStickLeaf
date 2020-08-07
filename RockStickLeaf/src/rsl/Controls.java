@@ -4,11 +4,11 @@ import java.awt.event.*;
 
 public class Controls implements KeyListener{
 
-	//private Game game;
+	private Game game;
 	private Player player;
 	//controls for each player added
-	private final int[][] CONTROLSCHEMES = {{KeyEvent.VK_UP,KeyEvent.VK_DOWN,KeyEvent.VK_LEFT,KeyEvent.VK_RIGHT},
-			{KeyEvent.VK_W,KeyEvent.VK_S,KeyEvent.VK_A,KeyEvent.VK_D},
+	private final int[][] CONTROLSCHEMES = {{KeyEvent.VK_W,KeyEvent.VK_S,KeyEvent.VK_A,KeyEvent.VK_D},
+			{KeyEvent.VK_UP,KeyEvent.VK_DOWN,KeyEvent.VK_LEFT,KeyEvent.VK_RIGHT},
 			{KeyEvent.VK_I,KeyEvent.VK_K,KeyEvent.VK_J,KeyEvent.VK_L},
 			{KeyEvent.VK_NUMPAD8,KeyEvent.VK_NUMPAD5,KeyEvent.VK_NUMPAD4,KeyEvent.VK_NUMPAD6}};
 	private final int UPKEY = 0, RIGHTKEY = 3, DOWNKEY = 1, LEFTKEY = 2;
@@ -17,8 +17,8 @@ public class Controls implements KeyListener{
 	public String sequence;
 	public boolean awaiting;
 	
-	public Controls(Player body, int c) {
-		//game = g;
+	public Controls(Game g, Player body, int c) {
+		game = g;
 		player = body;
 		scheme = c;
 		choosingsequence = "";
@@ -37,6 +37,7 @@ public class Controls implements KeyListener{
 	
 	
 	public void keyPressed(KeyEvent e){
+		game.draw.repaint();
 		int key = e.getKeyCode();
 		if(!awaiting)return; //if player doesn't need to input, don't get a sequence
 		

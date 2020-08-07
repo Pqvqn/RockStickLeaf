@@ -15,7 +15,7 @@ public class UIMatch extends UIElement{
 		
 		playerUI = new ArrayList<UIPlayer>();
 		for(int i=0; i<p.size(); i++) { //add players, alternating side that they are on
-			UIPlayer np = new UIPlayer(game,xPos+((i%2==0)?-500:500),yPos,size,(i%2==0)?UIPlayer.RIGHT:UIPlayer.LEFT,p.get(i));
+			UIPlayer np = new UIPlayer(game,xPos+((i%2==0)?-400:400),yPos,size,(i%2==0)?UIPlayer.RIGHT:UIPlayer.LEFT,p.get(i));
 			parts.add(np);
 			playerUI.add(np);
 		}

@@ -65,6 +65,7 @@ public class Draw extends JPanel{
 		displayUIElement(inventories,true);
 		displayUIElement(match,true);
 		displayUIElement(catalogue,true);
+		updateUIElement(match);
 		for(int i=0; i<ui.size(); i++) {
 			if(ui.get(i)!=null)ui.get(i).paint(g);
 		}
