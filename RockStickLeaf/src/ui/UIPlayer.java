@@ -12,6 +12,7 @@ public class UIPlayer extends UIElement{
 	private int orientation;
 	private UIText name;
 	private UIText actions;
+	private UIMenu menu;
 	
 	public UIPlayer(Game frame, int x, int y, int sz, int orient, Player p) {
 		super(frame,x,y);
@@ -22,7 +23,16 @@ public class UIPlayer extends UIElement{
 		name.center(xPos);
 		String actionstext = player.actionsTaken()+"/"+player.actionsCap()+" actions";
 		parts.add(actions = new UIText(game,xPos-actionstext.length()/2*(size/2),yPos-size,actionstext,Color.WHITE,new Font("Arial",Font.PLAIN,size/2)));
+		parts.add(menu = new UIMenu(game,xPos,yPos-500));
 		update();
+	}
+	
+	public void setMenu(String prompt, int[] nums, String[] strings, boolean display) {
+		menu.setMenu(prompt, nums, strings, display);
+	}
+	
+	public boolean isPlayer(Player p) {
+		return player.equals(p);
 	}
 	
 	@Override

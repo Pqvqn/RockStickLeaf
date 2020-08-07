@@ -36,6 +36,14 @@ public class UIMatch extends UIElement{
 		game.draw.repaint();
 	}
 	
+	public void setMenu(Player p, String prompt, int[] nums, String[] strings, boolean display) {
+		for(int i=0; i<playerUI.size(); i++) {
+			if(playerUI.get(i).isPlayer(p)) {
+				playerUI.get(i).setMenu(prompt, nums, strings, display);
+			}
+		}
+	}
+	
 	@Override
 	public void update() {
 		for(int i=0; i<playerUI.size(); i++) {

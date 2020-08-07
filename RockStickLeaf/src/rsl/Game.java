@@ -87,47 +87,68 @@ public class Game extends JFrame{
 		boolean doGame = true;
 		ArrayList<Player> doneMove = players; //order in which players did move
 		while(doGame) {
-			for(int i=doneMove.size()-1; i>=0; i--) { //let each player take their turn
+			for(int i=doneMove.size()-1; i>=0 && doGame; i--) { //let each player take their turn
 				Player p1 = doneMove.get(i); //in order of who did turn last
 				p1.targets = new ArrayList<Unit>(); //reset targets
-				System.out.println(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
+				//System.out.println(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
 				
 				p1.isTurn = true;
+				draw.match.setMenu(p1, "Choose Action:",new int[] {0,1,2}, new String[] {"Craft","Save","Target"}, true);
 				String p1c = retrieveSequence(p1); //get choice of action
-				
-				if(p1c.equals("<")) { //< = quit and save
-					doGame = false;
-				}else {
-					while(p1.isTurn && p1c.length()>0) { //continue asking until turn ended (presses up without choice before it)
-						if(p1.canAct()) {
-							switch(p1c) {
-							case "v": //v = crafting
-								System.out.println("Product: ");
-								Recipe craftr = getRecipe(retrieveSequence(p1),p1);
-								if(craftr!=null){
-									p1.craft(craftr);
+				while(p1.isTurn && p1c.length()>0) { //continue asking until turn ended (presses up without choice before it)
+					if(p1.canAct()) {
+						switch(p1c) {
+						case "v": //v = crafting
+							//System.out.println("Product: ");
+							draw.match.setMenu(p1, "Product:",new int[] {-1}, new String[] {"Input Unit Code"}, true);
+							Recipe craftr = getRecipe(retrieveSequence(p1),p1);
+							if(craftr!=null){
+								p1.craft(craftr);
+							}
+							break;
+						case ">": //> = capturing
+							Unit u = null;
+							while(u == null){ //ask for target until valid one given
+								//System.out.println("Target: ");
+								draw.match.setMenu(p1, "Target:",new int[] {-1}, new String[] {"Input Unit Code"}, true);
+								int t = decode(retrieveSequence(p1));
+								u = (t<unitorder.size() && t>=0)?unitorder.get(t):null;
+							}
+							p1.capture(otherPlayer(p1),u);
+							break;
+						case "<": //< = save
+							draw.match.setMenu(p1, "Save:",new int[] {0,1,2}, new String[] {"Cancel","Save & Continue","Save & Quit"}, true);
+							int t = decode(retrieveSequence(p1));
+							if(t==1 || t==2) {
+								try {
+									writeFiles();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
 								}
-								break;
-							case ">": //> = capturing
-								Unit u = null;
-								while(u == null){ //ask for target until valid one given
-									System.out.println("Target: ");
-									int t = decode(retrieveSequence(p1));
-									u = (t<unitorder.size() && t>=0)?unitorder.get(t):null;
-								}
-								p1.capture(otherPlayer(p1),u);
-								break;
-							case "": //^ only = end turn
-								p1.isTurn = false;
-								break;
-							default:
-								break;
 							}
 							
+							if(t==2) {
+								p1.isTurn = false;
+								doGame = false;
+							}
+							break;
+						case "": //^ only = end turn
+							p1.isTurn = false;
+							break;
+						default:
+							break;
 						}
-						System.out.println(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
+						
+					}
+					if(doGame) {
+						//System.out.println(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
+						draw.match.setMenu(p1, "Choose Action:",new int[] {0,1,2}, new String[] {"Craft","Save","Target"}, true);
 						p1c = retrieveSequence(p1);
 					}
+				}
+				if(doGame) {
+					draw.match.setMenu(p1, "", null, null, false);
 					p1.isTurn = false;
 				}
 			}
@@ -320,17 +341,24 @@ public class Game extends JFrame{
 			recipes.add(craftr);
 		}
 		while(craftr==null) { //until recipe chosen, ask
-			System.out.println("Choose Recipe:\n"+encode(0)+": Cancel\n"+encode(1)+": New"); //ask player which recipe to do
+			//System.out.println("Choose Recipe:\n"+encode(0)+": Cancel\n"+encode(1)+": New"); //ask player which recipe to do
+			int[] nums = new int[2+craftu.recipes.size()];
+			String[] strs = new String[2+craftu.recipes.size()];
+			nums[0]=0;strs[0]="Cancel";
+			nums[1]=1;strs[1]="New Recipe";
 			for(int i=0; i<craftu.recipes.size(); i++) {
 				Recipe r = craftu.recipes.get(i);
-				System.out.println(encode(i+2)+": "+r);
+				//System.out.println(encode(i+2)+": "+r);
+				nums[i+2] = i+2;
+				strs[i+2] = r+"";
 			}
+			draw.match.setMenu(p, "Choose Recipe:",nums,strs, true);
 			try {
 				int ans = decode(retrieveSequence(p));
 				if(ans==0) { //cancel crafting
 					return null;
 				}else if(ans==1) { //create new recipe
-					System.out.println("Recipe: ");
+					//System.out.println("Recipe: ");
 					craftr = new Recipe(this,getScreenInput("New Recipe:"));
 					recipes.add(craftr);
 					return craftr;

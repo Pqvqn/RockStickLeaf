@@ -33,7 +33,7 @@ public class UISymbol extends UIElement{
 		Graphics2D g2 = (Graphics2D)g;
 		AffineTransform origt = g2.getTransform(); //transformation to reset to
 	
-		if(symbol.equals("v") || symbol.equals("<") || symbol.equals(">")){ //for arrows
+		if(symbol.equals("v") || symbol.equals("<") || symbol.equals(">") || symbol.equals("^") || symbol.equals("_")){ //for arrows
 			g.setColor(color_secondary); //draw arrow
 			g2.rotate(Math.PI/4,xPos,yPos);
 			g2.drawRect(xPos-size/2, yPos-size/2, size, size); //draw outline behind arrow
@@ -51,9 +51,13 @@ public class UISymbol extends UIElement{
 			case "^":
 				//g2.rotate(0,xPos,yPos);
 				break;
+			case "_":
+				break;
 			}
-			g2.fillRect(xPos-size/2,yPos-size/2,size,size/3); //draw rectangles for arrow
-			g2.fillRect(xPos-size/2,yPos-size/2,size/3,size);
+			if(!symbol.equals("_")) {
+				g2.fillRect(xPos-size/2,yPos-size/2,size,size/3); //draw rectangles for arrow
+				g2.fillRect(xPos-size/2,yPos-size/2,size/3,size);
+			}
 			
 		}
 		
