@@ -37,9 +37,8 @@ public class Controls implements KeyListener{
 	
 	
 	public void keyPressed(KeyEvent e){
-		game.draw.repaint();
 		int key = e.getKeyCode();
-		if(!awaiting)return; //if player doesn't need to input, don't get a sequence
+		if(!awaiting) {game.draw.repaint();return;} //if player doesn't need to input, don't get a sequence
 		
 		if(key == CONTROLSCHEMES[scheme][UPKEY]) {
 			if(player.isTurn) { //build sequence for turn actions
@@ -59,6 +58,7 @@ public class Controls implements KeyListener{
 		}else if(key == CONTROLSCHEMES[scheme][RIGHTKEY]) {
 			choosingsequence += ">";
 		}
+		game.draw.repaint();
 	}
 
 	public void keyReleased(KeyEvent e) {

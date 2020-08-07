@@ -21,17 +21,30 @@ public class Game extends JFrame{
 	public ArrayList<Unit> unitorder; //units stored in order
 	public ArrayList<DefaultUnit> defaults;
 	public Set<Recipe> recipes;
-	private Scanner s;
 	
 	public Game(int playerNum) {
 		super("Rock Stick Leaf");
 		
-		s = new Scanner(System.in);
-		System.out.println("Save name: ");
-		savename = getConsoleInput();
+		draw = new Draw(this);
+		draw.textinput = new UITextInput(this,X_RESOL/2,Y_RESOL/2);
+		
+		//window settings
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setUndecorated(false);
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
+		setVisible(true);
+		setFocusable(true);
+		requestFocus();
+		//setBackground(Color.GRAY);
+		//setForeground(Color.GRAY);
+				
+		add(draw);
+		pack();
+		
+		savename = getScreenInput("Save name:");
+
 		filepath = System.getProperty("user.home")+"/Documents/RockStickLeaf/"+savename;
 		//game data
-		draw = new Draw(this);
 		defaults = new ArrayList<DefaultUnit>();
 		try {
 			createUnits();
@@ -48,34 +61,20 @@ public class Game extends JFrame{
 		playerCount = playerNum;
 		players = new ArrayList<Player>();
 		for(int i=0; i<playerCount; i++) { //create each player
-			System.out.println("Player "+i+": ");
-			String pname = getConsoleInput(); //ask for player name
+			String pname = getScreenInput("Player "+i+": "); //ask for player name
 			players.add(new Player(this,pname,new File(filepath+"/inventory_"+pname+".txt"),i));
 			draw.inventories.add(new UIInventory(this,70+i*300,100,20,players.get(i)));
-		}	
-		//create ui
-		draw.match = new UIMatch(this,X_RESOL/2,Y_RESOL-100,50,players);
-		draw.catalogue = new UICatalogue(this,50,Y_RESOL/2+100,10,25);
-		
-		//window settings
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setUndecorated(false);
-		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setVisible(true);
-		setFocusable(true);
+		}
 		for(int i=0; i<controls.size(); i++) {
 			addKeyListener(controls.get(i));
 		}
-		requestFocus();
-		//setBackground(Color.GRAY);
-		//setForeground(Color.GRAY);
-				
-		add(draw);
-		pack();
+		//create ui
+		draw.match = new UIMatch(this,X_RESOL/2,Y_RESOL-100,50,players);
+		draw.catalogue = new UICatalogue(this,50,Y_RESOL/2+100,10,25);
 
 		while(defaults.isEmpty()) { //ask players for beginning units
 			System.out.println("List default units: ");
-			String listu = getConsoleInput();
+			String listu = getScreenInput("Comma-Separated Default Unit List:");
 			String[] components = listu.split(",");
 			for(int i=0; i<components.length; i++) {
 				addNewUnit(new DefaultUnit(this,components[i]));
@@ -297,9 +296,18 @@ public class Game extends JFrame{
 		return null;
 	}
 	
-	public String getConsoleInput() { //asks for inputted string in console
-		String st = s.nextLine();
-		return st;
+	public String getScreenInput(String prompt) { //asks for inputted string on screen, prompt displayed above field
+		draw.textinput.startText(prompt);
+		draw.displayUIElement(draw.textinput,true);
+		addKeyListener(draw.textinput);
+		while(draw.textinput.getSubmission()==null) {
+			freeze(1);
+			draw.updateUIElement(draw.textinput);
+			draw.repaint();
+		}
+		removeKeyListener(draw.textinput);
+		draw.displayUIElement(draw.textinput,false);
+		return draw.textinput.getSubmission();
 	}
 	
 	public Recipe getRecipe(String useq, Player p) { //given sequence for unit, have player choose/make a recipe
@@ -307,10 +315,8 @@ public class Game extends JFrame{
 		Unit craftu = (n>=0 && n<unitorder.size())?unitorder.get(n):null; //unit to be crafted, if it exists yet
 		Recipe craftr = null;
 		while(craftu==null) { //if new unit must be made (sequence doesn't correspond to a unit)
-			System.out.println("New Unit: ");
-			addNewUnit(craftu = new Unit(this,getConsoleInput()));
-			System.out.println("Recipe: ");
-			craftr = new Recipe(this,getConsoleInput());
+			addNewUnit(craftu = new Unit(this,getScreenInput("New Unit Name:")));
+			craftr = new Recipe(this,getScreenInput("New Recipe:"));
 			recipes.add(craftr);
 		}
 		while(craftr==null) { //until recipe chosen, ask
@@ -325,7 +331,7 @@ public class Game extends JFrame{
 					return null;
 				}else if(ans==1) { //create new recipe
 					System.out.println("Recipe: ");
-					craftr = new Recipe(this,getConsoleInput());
+					craftr = new Recipe(this,getScreenInput("New Recipe:"));
 					recipes.add(craftr);
 					return craftr;
 				}else { //pick from chosen recipe

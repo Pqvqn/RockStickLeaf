@@ -17,6 +17,7 @@ public class Draw extends JPanel{
 	public ArrayList<UIInventory> inventories;
 	public UICatalogue catalogue;
 	public UIMatch match;
+	public UITextInput textinput;
 	
 	public Draw(Game g) {
 		super();
@@ -65,7 +66,7 @@ public class Draw extends JPanel{
 		displayUIElement(inventories,true);
 		displayUIElement(match,true);
 		displayUIElement(catalogue,true);
-		updateUIElement(match);
+		if(match!=null)updateUIElement(match);
 		for(int i=0; i<ui.size(); i++) {
 			if(ui.get(i)!=null)ui.get(i).paint(g);
 		}

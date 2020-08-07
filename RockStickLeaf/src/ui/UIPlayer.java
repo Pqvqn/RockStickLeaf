@@ -19,6 +19,7 @@ public class UIPlayer extends UIElement{
 		size = sz;
 		orient = orientation;
 		parts.add(name = new UIText(game,xPos-player.name.length()/2*size*2,yPos-size*2,player.name,Color.WHITE,new Font("Arial",Font.BOLD,size*2)));
+		name.center(xPos);
 		String actionstext = player.actionsTaken()+"/"+player.actionsCap()+" actions";
 		parts.add(actions = new UIText(game,xPos-actionstext.length()/2*(size/2),yPos-size,actionstext,Color.WHITE,new Font("Arial",Font.PLAIN,size/2)));
 		update();
@@ -30,7 +31,7 @@ public class UIPlayer extends UIElement{
 			name.setColor(Color.GREEN);
 			String actionstext = player.actionsTaken()+"/"+player.actionsCap()+" actions";
 			actions.setText(actionstext);
-			actions.setxPos(xPos-actionstext.length()/2*(size/2));
+			actions.center(xPos);
 		}else if(player.choice!=null) {
 			name.setColor(Color.CYAN);
 			actions.setText("");

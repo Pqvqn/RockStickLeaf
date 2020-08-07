@@ -15,7 +15,7 @@ public class UIMatch extends UIElement{
 	public UIMatch(Game frame, int x, int y, int sz, ArrayList<Player> p) {
 		super(frame,x,y);
 		size = sz;
-		parts.add(countdown = new UIText(game,xPos-size*2,yPos-size*2,"",Color.WHITE,new Font("Arial",Font.BOLD,size*4)));
+		parts.add(countdown = new UIText(game,xPos,yPos-size*2,"",Color.WHITE,new Font("Arial",Font.BOLD,size*4)));
 		playerUI = new ArrayList<UIPlayer>();
 		for(int i=0; i<p.size(); i++) { //add players, alternating side that they are on
 			UIPlayer np = new UIPlayer(game,xPos+((i%2==0)?-400:400),yPos,size,(i%2==0)?UIPlayer.RIGHT:UIPlayer.LEFT,p.get(i));
@@ -30,6 +30,7 @@ public class UIMatch extends UIElement{
 			countdown.setText("");
 		}else {
 			countdown.setText(c+"");
+			countdown.center(xPos);
 			countdown.setColor(new Color(255,Math.min((255/4)*c,255),0));
 		}
 		game.draw.repaint();
