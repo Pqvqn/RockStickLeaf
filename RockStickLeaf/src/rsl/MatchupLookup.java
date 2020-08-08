@@ -31,10 +31,16 @@ public class MatchupLookup {
 	}
 	public void createMatch(Matchup m) { //gets player input to determine winner
 		String seq = null;
-		System.out.println("Winner of "+m+" is:");
 		while(seq == null) { //while no agreement between players on winner
 			for(int i=0; i<game.players.size(); i++) { //for each player, ask winner, proceed when there is a consensus
 				Player p = game.players.get(i);
+				int[] nums = new int[m.contenders().length]; //get all unit names/numbers for menu
+				String[] strs = new String[m.contenders().length];
+				for(int j=0; j<nums.length; j++) {
+					nums[j] = game.unitorder.indexOf(m.contenders()[j]);
+					strs[j] = m.contenders()[j].name;
+				}
+				game.draw.match.setMenu(p,"Winner of "+m+" is:",nums,strs,true);
 				System.out.println(p.name+": ");
 				p.isTurn = true;
 				String resp = game.retrieveSequence(p);
@@ -46,6 +52,7 @@ public class MatchupLookup {
 						seq = null;
 					}
 				}
+				game.draw.match.setMenu(p,"",null,null,false);
 			}
 			if(seq!=null) { //test if chosen sequence corresponds to a contender
 				boolean ok = false;

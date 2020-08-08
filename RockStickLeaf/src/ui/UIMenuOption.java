@@ -19,7 +19,7 @@ public class UIMenuOption extends UIElement{
 		}else {
 			dirkeys = game.encode(number);
 		}
-		parts.add(new UIText(game, xPos+40, yPos+8, string, new Color(255,255,255,200), new Font("Arial",Font.BOLD,20))); //text
+		parts.add(new UIText(game, xPos+40*(dirkeys.length()-1), yPos+8, string, new Color(255,255,255,200), new Font("Arial",Font.BOLD,20))); //text
 		for(int i=0; i<dirkeys.length(); i++) { //symbols for dirkeys
 			parts.add(new UISymbol(game,xPos+40*i-20,yPos,20,dirkeys.substring(i,i+1),Color.WHITE,Color.BLACK));
 		}

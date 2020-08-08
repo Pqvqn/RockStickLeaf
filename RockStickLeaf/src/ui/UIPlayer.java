@@ -12,6 +12,7 @@ public class UIPlayer extends UIElement{
 	private int orientation;
 	private UIText name;
 	private UIText actions;
+	private UIText targets;
 	private UIMenu menu;
 	
 	public UIPlayer(Game frame, int x, int y, int sz, int orient, Player p) {
@@ -23,6 +24,7 @@ public class UIPlayer extends UIElement{
 		name.center(xPos);
 		String actionstext = player.actionsTaken()+"/"+player.actionsCap()+" actions";
 		parts.add(actions = new UIText(game,xPos-actionstext.length()/2*(size/2),yPos-size,actionstext,Color.WHITE,new Font("Arial",Font.PLAIN,size/2)));
+		parts.add(targets = new UIText(game,xPos,yPos,"",Color.WHITE,new Font("Arial",Font.PLAIN,size/2)));
 		parts.add(menu = new UIMenu(game,xPos,yPos-500));
 		update();
 	}
@@ -38,15 +40,25 @@ public class UIPlayer extends UIElement{
 	@Override
 	public void update() {
 		if(player.isTurn) {
-			name.setColor(Color.GREEN);
-			String actionstext = player.actionsTaken()+"/"+player.actionsCap()+" actions";
+			name.setColor(Color.GREEN); //green when player's turn
+			String actionstext = player.actionsTaken()+"/"+player.actionsCap()+" actions"; //draw actions
 			actions.setText(actionstext);
 			actions.center(xPos);
+			if(player.targets.isEmpty()) { //if targets, display them
+				targets.setText("");
+			}else{
+				String b = "";
+				for(Unit u : player.targets) {
+					b+=", "+u.name;
+				}
+				targets.setText("Hostages: "+b.substring(2));
+				targets.center(xPos);
+			}
 		}else if(player.choice!=null) {
-			name.setColor(Color.CYAN);
+			name.setColor(Color.CYAN); //cyan when player has locked in
 			actions.setText("");
 		}else {
-			name.setColor(Color.WHITE);
+			name.setColor(Color.WHITE); //white otherwise
 			actions.setText("");
 		}
 	}

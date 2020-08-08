@@ -42,6 +42,7 @@ public class UIMatch extends UIElement{
 				playerUI.get(i).setMenu(prompt, nums, strings, display);
 			}
 		}
+		if(display)game.draw.repaint();
 	}
 	
 	@Override
