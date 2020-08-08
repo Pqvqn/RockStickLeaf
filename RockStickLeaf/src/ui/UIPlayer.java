@@ -39,21 +39,21 @@ public class UIPlayer extends UIElement{
 	
 	@Override
 	public void update() {
+		if(player.targets==null || player.targets.isEmpty()) { //if targets, display them
+			targets.setText("");
+		}else{
+			String b = "";
+			for(Unit u : player.targets) {
+				b+=", "+u.name;
+			}
+			targets.setText("Hostages: "+b.substring(2));
+			targets.center(xPos);
+		}
 		if(player.isTurn) {
 			name.setColor(Color.GREEN); //green when player's turn
 			String actionstext = player.actionsTaken()+"/"+player.actionsCap()+" actions"; //draw actions
 			actions.setText(actionstext);
 			actions.center(xPos);
-			if(player.targets.isEmpty()) { //if targets, display them
-				targets.setText("");
-			}else{
-				String b = "";
-				for(Unit u : player.targets) {
-					b+=", "+u.name;
-				}
-				targets.setText("Hostages: "+b.substring(2));
-				targets.center(xPos);
-			}
 		}else if(player.choice!=null) {
 			name.setColor(Color.CYAN); //cyan when player has locked in
 			actions.setText("");

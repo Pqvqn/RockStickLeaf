@@ -90,7 +90,6 @@ public class Game extends JFrame{
 			for(int i=doneMove.size()-1; i>=0 && doGame; i--) { //let each player take their turn
 				Player p1 = doneMove.get(i); //in order of who did turn last
 				p1.targets = new ArrayList<Unit>(); //reset targets
-				//System.out.println(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
 				
 				p1.isTurn = true;
 				draw.match.setMenu(p1, "Choose Action:",new int[] {0,1,2}, new String[] {"Craft","Save","Target"}, true);
@@ -99,7 +98,6 @@ public class Game extends JFrame{
 					if(p1.canAct()) {
 						switch(p1c) {
 						case "v": //v = crafting
-							//System.out.println("Product: ");
 							draw.match.setMenu(p1, "Product:",new int[] {-1}, new String[] {"Input Unit Code"}, true);
 							Recipe craftr = getRecipe(retrieveSequence(p1),p1);
 							if(craftr!=null){
@@ -109,12 +107,11 @@ public class Game extends JFrame{
 						case ">": //> = capturing
 							Unit u = null;
 							while(u == null){ //ask for target until valid one given
-								//System.out.println("Target: ");
 								draw.match.setMenu(p1, "Target:",new int[] {-1}, new String[] {"Input Unit Code"}, true);
 								int t = decode(retrieveSequence(p1));
 								u = (t<unitorder.size() && t>=0)?unitorder.get(t):null;
 							}
-							p1.capture(otherPlayer(p1),u);
+							p1.target(otherPlayer(p1),u); //add targets to list
 							break;
 						case "<": //< = save
 							draw.match.setMenu(p1, "Save:",new int[] {0,1,2}, new String[] {"Cancel","Save & Continue","Save & Quit"}, true);
@@ -153,6 +150,11 @@ public class Game extends JFrame{
 				}
 			}
 			if(doGame) {
+				
+				for(int i=0; i<players.size(); i++) { 
+					players.get(i).capture(otherPlayer(players.get(i))); //take all targets hostage
+				}
+				
 				//countdown for throw
 				System.out.println("3");
 				draw.match.count(3,true);
@@ -174,7 +176,6 @@ public class Game extends JFrame{
 					for(int i=0; i<players.size(); i++) {
 						if(!doneMove.contains(players.get(i)) && players.get(i).choice!=null) { //if player has just thrown unit
 							doneMove.add(players.get(i));
-							System.out.println(players.get(i).name+" LOCKED");
 							players.get(i).endSequence();
 						}
 					}
@@ -245,6 +246,8 @@ public class Game extends JFrame{
 		for(Unit hostage : loser.targets) { //take care of loser's target captures
 			winner.give(hostage); //givem hostages back
 		}
+		loser.targets = new ArrayList<Unit>(); //reset target lists
+		winner.targets = new ArrayList<Unit>();
 		winner.give(losing); //winner gets the losing unit
 		System.out.println(winner);
 		System.out.println(loser);
@@ -263,6 +266,8 @@ public class Game extends JFrame{
 		for(Unit hostage : p2.targets) { //give hostages back to owner
 			p1.give(hostage);
 		}
+		p1.targets = new ArrayList<Unit>(); //reset target lists
+		p2.targets = new ArrayList<Unit>();
 		
 		System.out.println(p1);
 		System.out.println(p2);
@@ -337,18 +342,20 @@ public class Game extends JFrame{
 		Recipe craftr = null;
 		while(craftu==null) { //if new unit must be made (sequence doesn't correspond to a unit)
 			addNewUnit(craftu = new Unit(this,getScreenInput("New Unit Name:")));
-			craftr = new Recipe(this,getScreenInput("New Recipe:"));
+			String r = "";
+			while(!Recipe.validRecipe(this,r)) {
+				r = getScreenInput("New Recipe:");
+			}
+			craftr = new Recipe(this,r);
 			recipes.add(craftr);
 		}
 		while(craftr==null) { //until recipe chosen, ask
-			//System.out.println("Choose Recipe:\n"+encode(0)+": Cancel\n"+encode(1)+": New"); //ask player which recipe to do
 			int[] nums = new int[2+craftu.recipes.size()];
 			String[] strs = new String[2+craftu.recipes.size()];
 			nums[0]=0;strs[0]="Cancel";
 			nums[1]=1;strs[1]="New Recipe";
 			for(int i=0; i<craftu.recipes.size(); i++) {
 				Recipe r = craftu.recipes.get(i);
-				//System.out.println(encode(i+2)+": "+r);
 				nums[i+2] = i+2;
 				strs[i+2] = r+"";
 			}
@@ -358,8 +365,11 @@ public class Game extends JFrame{
 				if(ans==0) { //cancel crafting
 					return null;
 				}else if(ans==1) { //create new recipe
-					//System.out.println("Recipe: ");
-					craftr = new Recipe(this,getScreenInput("New Recipe:"));
+					String r = "";
+					while(!Recipe.validRecipe(this,r)) {
+						r = getScreenInput("New Recipe:");
+					}
+					craftr = new Recipe(this,r);
 					recipes.add(craftr);
 					return craftr;
 				}else { //pick from chosen recipe

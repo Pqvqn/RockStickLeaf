@@ -28,6 +28,29 @@ public class Recipe {
 		return products.keySet().iterator();
 	}
 	
+	public static boolean validRecipe(Game g, String r) { //if recipe string is able to create a valid recipe
+		String[] components = r.split(":");
+		if(components.length!=2)return false; //no colon or too many colons (must be 1 to separate products/materials)
+		for(int i=0; i<components.length; i++) {
+			String[] components2 = components[i].split(",");
+			for(int j=0; j<components2.length; j++) {
+				String[] components3 = components2[j].split("\\*");
+				if(components3.length==1) {
+					if(!g.units.keySet().contains(components3[0]))return false; //unit name is invalid
+				}else if(components3.length==2) {
+					if(!g.units.keySet().contains(components3[0]))return false; //unit name is invalid
+					try {
+						Integer.parseInt(components3[1]);
+					}catch(NumberFormatException e) {
+						return false; //unit quantity is invalid
+					}
+				}else {
+					return false; //unit is not formatted in Name*Quantity
+				}
+			}
+		}
+		return true;
+	}
 	
 	private void create(String r) {
 		materials = new HashMap<Unit,Integer>();

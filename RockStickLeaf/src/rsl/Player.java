@@ -50,12 +50,20 @@ public class Player {
 		System.out.println("Successfully crafted");
 	}
 	
-	public void capture(Player enemy, Unit target) { //takes targeted opponent unit temporarily; adds to target list
-		if(enemy.has(target)) {
-			targets.add(target);
-			enemy.take(target);
-			System.out.println(target.name+" taken hostage");
-			act();
+	public void target(Player enemy, Unit target) { //adds to target list
+		targets.add(target);
+		act();
+	}
+	
+	public void capture(Player enemy) { //takes targets hostage
+		for(int i=0; i<targets.size(); i++) {
+			Unit u = targets.get(i);
+			if(enemy.has(u)) {
+				enemy.take(u);
+			}else {
+				targets.remove(i);
+				i--;
+			}
 		}
 	}
 	
