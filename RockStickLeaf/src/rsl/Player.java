@@ -23,6 +23,7 @@ public class Player {
 		game.controls.add(controls);
 		actionsCap = 3;
 		sequence = null;
+		targets = new ArrayList<Unit>();
 	}
 	
 	public boolean canCraft(Recipe r) { //if player has sufficient materials to craft a recipe
@@ -119,6 +120,10 @@ public class Player {
 	}
 	public int actionsTaken() {
 		return actionsTaken;
+	}
+	public void setActions(int taken, int cap) {
+		actionsTaken = taken;
+		actionsCap = cap;
 	}
 	public Inventory getInventory() {return inventory;}
 	public void writeFile() throws IOException {

@@ -15,6 +15,8 @@ public class Game extends JFrame{
 	public Draw draw;
 	public ArrayList<Controls> controls;
 	public ArrayList<Player> players;
+	public ArrayList<Player> turnOrder; //order in which players take their turn (decided by inverse of throw order)
+	public int turn;
 	public int playerCount;
 	public MatchupLookup matchups;
 	public Map<String,Unit> units; //map: get unit object from its name as a string
@@ -68,6 +70,14 @@ public class Game extends JFrame{
 		for(int i=0; i<controls.size(); i++) {
 			addKeyListener(controls.get(i));
 		}
+		
+		try {
+			loadMatch();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		//create ui
 		draw.match = new UIMatch(this,X_RESOL/2,Y_RESOL-100,50,players);
 		draw.catalogue = new UICatalogue(this,50,Y_RESOL/2+100,10,25);
@@ -85,12 +95,9 @@ public class Game extends JFrame{
 		System.out.println("Defaults are: "+def.substring(2));		
 		
 		boolean doGame = true;
-		ArrayList<Player> doneMove = players; //order in which players did move
 		while(doGame) {
-			for(int i=doneMove.size()-1; i>=0 && doGame; i--) { //let each player take their turn
-				Player p1 = doneMove.get(i); //in order of who did turn last
-				p1.targets = new ArrayList<Unit>(); //reset targets
-				
+			for(int i=turn; i<turnOrder.size() && doGame; i++) { //let each player take their turn
+				Player p1 = turnOrder.get(i); //in order of who did turn last
 				p1.isTurn = true;
 				draw.match.setMenu(p1, "Choose Action:",new int[] {0,1,2}, new String[] {"Craft","Save","Target"}, true);
 				String p1c = retrieveSequence(p1); //get choice of action
@@ -167,15 +174,15 @@ public class Game extends JFrame{
 				freeze(1000);
 				draw.match.count(0,true);
 				System.out.println("GO");
-				doneMove = new ArrayList<Player>();
+				turnOrder = new ArrayList<Player>();
 				for(int i=0; i<players.size(); i++) { //prepare players
 					players.get(i).choice = null;
 					players.get(i).startSequence();
 				}
-				while(doneMove.size()<players.size()) { //test if players have chosen yet until all players have chosen
+				while(turnOrder.size()<players.size()) { //test if players have chosen yet until all players have chosen
 					for(int i=0; i<players.size(); i++) {
-						if(!doneMove.contains(players.get(i)) && players.get(i).choice!=null) { //if player has just thrown unit
-							doneMove.add(players.get(i));
+						if(!turnOrder.contains(players.get(i)) && players.get(i).choice!=null) { //if player has just thrown unit
+							turnOrder.add(turnOrder.size(),players.get(i)); //add player to end of turn order list
 							players.get(i).endSequence();
 						}
 					}
@@ -185,6 +192,7 @@ public class Game extends JFrame{
 				System.out.println("DID: "+doMatch(players.get(0),players.get(0).choice,players.get(1),players.get(1).choice)+"\n");
 				players.get(0).choice = null;
 				players.get(1).choice = null;
+				turn = 0;
 			}
 		}
 		try {
@@ -302,7 +310,7 @@ public class Game extends JFrame{
 		}
 		reader.close();
 	}
-	private void createRecipes() throws IOException { //builds all unit types from file
+	private void createRecipes() throws IOException { //builds all recipes from file
 		recipes = new HashSet<Recipe>();
 		File b = new File(filepath+"/recipes.txt");
 		b.getParentFile().mkdirs();
@@ -315,9 +323,75 @@ public class Game extends JFrame{
 		}
 		reader.close();
 	}
+	private void loadMatch() throws IOException { //loads extra data for pvp match
+		turnOrder = new ArrayList<Player>();
+		turn = 0;
+		for(Player p : players) {
+			turnOrder.add(p);
+		}
+		File b = new File(filepath+"/match_data.txt");
+		b.getParentFile().mkdirs();
+		b.createNewFile();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(b),"UTF-8"));
+		String curr = reader.readLine();
+		while(curr!=null) {
+			if(curr.length()>0 && curr.substring(0,1).equals("#")) { //if on a match header
+				String[] names = curr.substring(1).split("#");
+				boolean correct = names.length == players.size();
+				for(Player p : players) { //test if header contains all players with no extra
+					boolean has = false;
+					for(String n : names) {if(n.equals(p.name))has = true;}
+					if(!has)correct=false;
+				}
+				if(correct) { //if this is the correct header
+					turnOrder = new ArrayList<Player>();
+					curr = reader.readLine();
+					while(curr!=null && curr.length()>0 && curr.substring(0,1).equals(":")) { //read all players
+						String[] data = curr.split("\\|");
+						Player p = player(data[0].substring(1));
+						turnOrder.add(p); //add players to turnOrder in order of how they are listed
+						for(int i=1; i<data.length; i++) {
+							String[] components = data[i].split(":");
+							switch(components[0]) {
+							case "TURN": //set this player to the current turn
+								turn = turnOrder.size()-1;
+								break;
+							case "ACT": //set player's actions taken/cap
+								String[] components2 = components[1].split("/");
+								p.setActions(Integer.parseInt(components2[0]),Integer.parseInt(components2[1]));
+								break;
+							case "TARGET": //set player's target list
+								String[] components3 = components[1].split(",");
+								for(int j=0; j<components3.length; j++) {
+									p.targets.add(units.get(components3[j]));
+								}
+								break;
+							}
+						}
+						curr = reader.readLine();
+					}
+					curr = null;
+				}else {
+					curr = reader.readLine();
+				}
+			}else {
+				curr = reader.readLine();
+			}
+		}
+		reader.close();
+		
+	}
+	
+	
 	public Player otherPlayer(Player compare) { //returns player that is not the given player
 		for(Player p : players) {
 			if(!p.equals(compare))return p;
+		}
+		return null;
+	}
+	public Player player(String name) { //returns player with given name
+		for(Player p : players) {
+			if(name.equals(p.name))return p;
 		}
 		return null;
 	}
