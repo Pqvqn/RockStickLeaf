@@ -41,7 +41,6 @@ public class MatchupLookup {
 					strs[j] = m.contenders()[j].name;
 				}
 				game.draw.match.setMenu(p,"Winner of "+m+" is:",nums,strs,true);
-				System.out.println(p.name+": ");
 				p.isTurn = true;
 				String resp = game.retrieveSequence(p);
 				p.isTurn = false;
@@ -65,7 +64,7 @@ public class MatchupLookup {
 			}
 		}
 		Unit u = game.unitorder.get(game.decode(seq));
-		System.out.println(u.name +" is victor of "+m);
+		game.draw.match.dispNotif(u.name +" is victor of "+m);
 		addResult(m,u);
 	}
 	public void addResult(Matchup m, Unit victor) {

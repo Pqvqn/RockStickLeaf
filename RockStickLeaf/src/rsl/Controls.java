@@ -38,6 +38,7 @@ public class Controls implements KeyListener{
 	
 	public void keyPressed(KeyEvent e){
 		int key = e.getKeyCode();
+		game.draw.match.dispNotif("");
 		if(!awaiting) {game.draw.repaint();return;} //if player doesn't need to input, don't get a sequence
 		
 		if(key == CONTROLSCHEMES[scheme][UPKEY]) {

@@ -84,16 +84,15 @@ public class Game extends JFrame{
 		draw.catalogue = new UICatalogue(this,50,Y_RESOL/2+100,10,25);
 
 		while(defaults.isEmpty()) { //ask players for beginning units
-			System.out.println("List default units: ");
 			String listu = getScreenInput("Comma-Separated Default Unit List:");
 			String[] components = listu.split(",");
 			for(int i=0; i<components.length; i++) {
 				addNewUnit(new DefaultUnit(this,components[i]));
 			}
-		}
+		}	
 		String def = "";
 		for(DefaultUnit du : defaults)def+=", "+du.name;
-		System.out.println("Defaults are: "+def.substring(2));		
+		draw.match.dispNotif("Defaults are: "+def.substring(2));
 		
 		boolean doGame = true;
 		while(doGame) {
@@ -127,6 +126,7 @@ public class Game extends JFrame{
 							if(t==1 || t==2) {
 								try {
 									writeFiles();
+									draw.match.dispNotif("Saved");
 								} catch (IOException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -164,17 +164,13 @@ public class Game extends JFrame{
 				}
 				
 				//countdown for throw
-				System.out.println("3");
 				draw.match.count(3,true);
 				freeze(1000);
-				System.out.println("2");
 				draw.match.count(2,true);
 				freeze(1000);
-				System.out.println("1");
 				draw.match.count(1,true);
 				freeze(1000);
 				draw.match.count(0,true);
-				System.out.println("GO");
 				turnOrder = new ArrayList<Player>();
 				for(int i=0; i<players.size(); i++) { //prepare players
 					players.get(i).choice = null;
@@ -189,15 +185,17 @@ public class Game extends JFrame{
 					}
 				}
 				draw.match.count(0,false);
-				System.out.println(players.get(0).choice.name +" v "+ players.get(1).choice.name);
-				System.out.println("DID: "+doMatch(players.get(0),players.get(0).choice,players.get(1),players.get(1).choice)+"\n");
+				if(doMatch(players.get(0),players.get(0).choice,players.get(1),players.get(1).choice)) {
+
+				}else {
+					draw.match.dispNotif(players.get(0).choice.name +" v "+ players.get(1).choice.name+"; Match Failed");
+				}
 				players.get(0).choice = null;
 				players.get(1).choice = null;
 				turn = 0;
 			}
 		}
 		//post-game code
-		System.out.println("Game has ended");
 		System.exit(0);
 	}
 
@@ -207,6 +205,7 @@ public class Game extends JFrame{
 			doSwap(p1,p2,u1,u2); //swap units
 			p1.resetActions(false);
 			p2.resetActions(false);
+			draw.match.dispNotif(players.get(0).choice.name +" v "+ players.get(1).choice.name+"; TIE");
 			return true;
 		}
 		Matchup m = new Matchup(new Unit[] {u1,u2});
@@ -215,6 +214,7 @@ public class Game extends JFrame{
 			doSwap(p1,p2,u1,u2); //swap units
 			p1.resetActions(false);
 			p2.resetActions(false);
+			draw.match.dispNotif(players.get(0).choice.name +" v "+ players.get(1).choice.name+"; TIE");
 			return true;
 		}
 		Unit losingUnit = winningUnit.equals(u1) ? u2:u1;
@@ -223,6 +223,7 @@ public class Game extends JFrame{
 		doTransfer(winner,loser,winningUnit,losingUnit); //transfer loser to winner
 		winner.resetActions(true);
 		loser.resetActions(false);
+		draw.match.dispNotif(players.get(0).choice.name +" v "+ players.get(1).choice.name+"; "+winner.name+" WINS");
 		return true;
 	}
 	
@@ -251,11 +252,7 @@ public class Game extends JFrame{
 		}
 		loser.targets = new ArrayList<Unit>(); //reset target lists
 		winner.targets = new ArrayList<Unit>();
-		winner.give(losing); //winner gets the losing unit
-		System.out.println(winner);
-		System.out.println(loser);
-		System.out.println(winner.name+" WIN");
-		
+		winner.give(losing); //winner gets the losing unit	
 	}
 	
 	private void doSwap(Player p1, Player p2, Unit p1u, Unit p2u) { //swaps thrown units
@@ -271,10 +268,6 @@ public class Game extends JFrame{
 		}
 		p1.targets = new ArrayList<Unit>(); //reset target lists
 		p2.targets = new ArrayList<Unit>();
-		
-		System.out.println(p1);
-		System.out.println(p2);
-		System.out.println("TIE");
 	}
 	private void addNewUnit(Unit u) {
 		if(u instanceof DefaultUnit)defaults.add((DefaultUnit)u); //add to default list if needed
@@ -411,12 +404,16 @@ public class Game extends JFrame{
 		Recipe craftr = null;
 		while(craftu==null) { //if new unit must be made (sequence doesn't correspond to a unit)
 			addNewUnit(craftu = new Unit(this,getScreenInput("New Unit Name:")));
-			String r = "";
-			while(!Recipe.validRecipe(this,r)) {
+			draw.match.dispNotif(craftu.name+" created");
+			String r = "no";
+			while(!Recipe.validRecipe(this,r) && !r.isEmpty()) {
 				r = getScreenInput("New Recipe:");
 			}
-			craftr = new Recipe(this,r);
-			recipes.add(craftr);
+			if(!r.isEmpty()) {
+				craftr = new Recipe(this,r);
+				draw.match.dispNotif(craftr.toString()+" added");
+				recipes.add(craftr);
+			}
 		}
 		while(craftr==null) { //until recipe chosen, ask
 			int[] nums = new int[2+craftu.recipes.size()];
@@ -431,15 +428,18 @@ public class Game extends JFrame{
 			draw.match.setMenu(p, "Choose Recipe:",nums,strs, true);
 			try {
 				int ans = decode(retrieveSequence(p));
-				if(ans==0) { //cancel crafting
+				if(ans<=1) { //cancel crafting
 					return null;
 				}else if(ans==1) { //create new recipe
-					String r = "";
-					while(!Recipe.validRecipe(this,r)) {
+					String r = "no";
+					while(!Recipe.validRecipe(this,r) && !r.isEmpty()) {
 						r = getScreenInput("New Recipe:");
 					}
-					craftr = new Recipe(this,r);
-					recipes.add(craftr);
+					if(!r.isEmpty()) {
+						craftr = new Recipe(this,r);
+						draw.match.dispNotif(craftr.toString()+" added");
+						recipes.add(craftr);
+					}
 					return craftr;
 				}else { //pick from chosen recipe
 					if(craftu.recipes.size()>ans-2) //choose recipe as long as it exists

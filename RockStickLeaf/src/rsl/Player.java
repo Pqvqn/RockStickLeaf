@@ -48,11 +48,12 @@ public class Player {
 			give(b,r.products.get(b));
 		}
 		act();
-		System.out.println("Successfully crafted");
+		game.draw.match.dispNotif("Successfully crafted "+r.toString().split(":")[0]);
 	}
 	
 	public void target(Player enemy, Unit target) { //adds to target list
 		targets.add(target);
+		game.draw.match.dispNotif("Targeted "+target.name);
 		act();
 	}
 	
