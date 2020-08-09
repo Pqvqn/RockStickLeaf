@@ -1,6 +1,7 @@
 package rsl;
 
 import java.io.*;
+import java.nio.file.*;
 import java.util.*;
 import javax.swing.*;
 
@@ -133,7 +134,8 @@ public class Game extends JFrame{
 							}
 							
 							if(t==2) {
-								p1.isTurn = false;
+								//p1.isTurn = false;
+								p1c = "";
 								doGame = false;
 							}
 							break;
@@ -146,7 +148,6 @@ public class Game extends JFrame{
 						
 					}
 					if(doGame) {
-						//System.out.println(p1.name +" "+p1.actionsTaken()+"/"+p1.actionsCap()+": ");
 						draw.match.setMenu(p1, "Choose Action:",new int[] {0,1,2}, new String[] {"Craft","Save","Target"}, true);
 						p1c = retrieveSequence(p1);
 					}
@@ -194,12 +195,6 @@ public class Game extends JFrame{
 				players.get(1).choice = null;
 				turn = 0;
 			}
-		}
-		try {
-			writeFiles();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		//post-game code
 		System.out.println("Game has ended");
@@ -516,7 +511,51 @@ public class Game extends JFrame{
 			players.get(i).writeFile();
 		}
 		
-		
+		//match data
+		File dataFile = new File(filepath+"/match_data.txt");
+		List<String> textlines = Files.readAllLines(dataFile.toPath());
+		FileWriter dataWriter = new FileWriter(dataFile);
+		boolean remove = false;
+		for(int i=0; i<textlines.size(); i++) {
+			String curr = textlines.get(i);
+			if(curr.length()>0 && curr.substring(0,1).equals("#")) { //if on a match header
+				String[] names = curr.substring(1).split("#");
+				boolean correct = names.length == players.size();
+				for(Player p : players) { //test if header contains all players with no extra
+					boolean has = false;
+					for(String n : names) {if(n.equals(p.name))has = true;}
+					if(!has)correct=false;
+				}
+				if(correct) { //if found header
+					remove = true;
+				}else {
+					remove = false;
+				}
+			}
+			if(!remove) {
+				dataWriter.write(curr+"\n");
+			}
+		}
+
+		String w = "";
+		for(Player p : players)w+="#"+p.name;
+		dataWriter.write(w+"\n");
+		for(int i=0; i<players.size(); i++) {
+			Player p = players.get(i);
+			w = ":"+p.name;
+			if(p.isTurn) {
+				w += "|TURN";
+			}
+			w += "|ACT:"+p.actionsTaken()+"/"+p.actionsCap();
+			if(!p.targets.isEmpty()) {
+				w += "|TARGET:";
+				for(Unit t : p.targets) {
+					w+=t.name+",";
+				}
+			}
+			dataWriter.write(w+"\n");
+		}
+		dataWriter.close();
 	}
 	
 	//given string of button presses (down, left, right), return int number
