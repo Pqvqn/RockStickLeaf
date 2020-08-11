@@ -15,7 +15,7 @@ public class UIMenuOption extends UIElement{
 		string = str;
 		String dirkeys;
 		if(number<0) {
-			dirkeys = "_";
+			dirkeys = "O";
 		}else {
 			dirkeys = game.encode(number);
 		}
