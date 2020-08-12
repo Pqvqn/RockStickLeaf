@@ -66,7 +66,7 @@ public class Game extends JFrame{
 		for(int i=0; i<playerCount; i++) { //create each player
 			String pname = getScreenInput("Player "+i+": "); //ask for player name
 			players.add(new Player(this,pname,new File(filepath+"/inventory_"+pname+".txt"),i));
-			draw.inventories.add(new UIInventory(this,70+i*300,100,20,players.get(i)));
+			draw.inventories.add(new UIInventory(this,70+i*330,100,20,players.get(i)));
 		}
 		for(int i=0; i<controls.size(); i++) {
 			addKeyListener(controls.get(i));
@@ -273,6 +273,12 @@ public class Game extends JFrame{
 		if(u instanceof DefaultUnit)defaults.add((DefaultUnit)u); //add to default list if needed
 		units.put(u.name,u); //put in unit lists
 		unitorder.add(u);
+		try {
+			u.imgFile = unitImage(u);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if(draw.catalogue!=null) { //update catalogue ui
 			draw.updateUIElement(draw.catalogue);
 			draw.repaint();
@@ -620,6 +626,14 @@ public class Game extends JFrame{
 		String pc = p.sequence();
 		p.endSequence();
 		return pc;
+	}
+	
+	//returns unit's image file
+	public File unitImage(Unit u) throws IOException {
+		File ret = new File(filepath+"/unim/"+u.name+".png");
+		ret.getParentFile().mkdirs();
+		ret.createNewFile();
+		return ret;
 	}
 	
 }

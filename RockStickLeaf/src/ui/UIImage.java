@@ -6,19 +6,29 @@ import rsl.*;
 
 public class UIImage extends UIElement{
 	
-	private double ratio;
+	private double wid,hei;
 	private Image img;
 	
-	public UIImage(Game frame, int x, int y, double r, Image i) {
+	
+	public UIImage(Game frame, int x, int y, double w, double h, Image i) { //image size as set w and h values
 		super(frame,x,y);
 		xPos = x;
 		yPos = y;
-		ratio = r;
 		img = i;
+		wid = w;
+		hei = h;
+	}
+	public UIImage(Game frame, int x, int y, double ratio, Image i) { //image size as ratio to regular size
+		super(frame,x,y);
+		xPos = x;
+		yPos = y;
+		img = i;
+		wid = img.getWidth(null) * ratio;
+		hei = img.getHeight(null) * ratio;
 	}
 
 	public void paint(Graphics g) {
-		g.drawImage(img, xPos, yPos, (int)(.5+img.getWidth(null)*ratio), (int)(.5+img.getHeight(null)*ratio), null);
+		g.drawImage(img, xPos, yPos, (int)(.5+wid), (int)(.5+hei), null);
 	}
 	
 	

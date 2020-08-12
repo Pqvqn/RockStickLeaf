@@ -1,5 +1,6 @@
 package rsl;
 
+import java.io.*;
 import java.util.*;
 
 public class Unit {
@@ -8,6 +9,7 @@ public class Unit {
 	public ArrayList<Recipe> recipes;
 	public String name;
 	public int lastComplexity;
+	public File imgFile;
 	
 	public Unit(Game g, String unitname) {
 		game = g;
