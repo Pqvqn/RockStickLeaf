@@ -5,14 +5,14 @@ import java.awt.event.*;
 
 import rsl.*;
 
-public class UITextInput extends UIElement implements KeyListener{
+public class UIInputType extends UIElement implements KeyListener{
 
 	private String submittedText;
 	private String writtenText;
 	private UIText textDisp;
 	private UIText promptDisp;
 	
-	public UITextInput(Game frame, int x, int y) {
+	public UIInputType(Game frame, int x, int y) {
 		super(frame,x,y);
 		submittedText = null;
 		writtenText = "";

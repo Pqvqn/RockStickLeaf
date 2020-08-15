@@ -1,8 +1,10 @@
 package rsl;
 
+import java.awt.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.List;
 import javax.swing.*;
 
 import ui.*;
@@ -29,7 +31,8 @@ public class Game extends JFrame{
 		super("Rock Stick Leaf");
 		
 		draw = new Draw(this);
-		draw.textinput = new UITextInput(this,X_RESOL/2,Y_RESOL/2);
+		draw.textinput = new UIInputType(this,X_RESOL/2,Y_RESOL/2);
+		draw.imageinput = new UIInputDraw(this,X_RESOL/2,Y_RESOL/2);
 		
 		//window settings
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -93,6 +96,8 @@ public class Game extends JFrame{
 		String def = "";
 		for(DefaultUnit du : defaults)def+=", "+du.name;
 		draw.match.dispNotif("Defaults are: "+def.substring(2));
+		
+		getScreenDraw("do something");
 		
 		boolean doGame = true;
 		while(doGame) {
@@ -402,6 +407,20 @@ public class Game extends JFrame{
 		removeKeyListener(draw.textinput);
 		draw.displayUIElement(draw.textinput,false);
 		return draw.textinput.getSubmission();
+	}
+	
+	public Image getScreenDraw(String prompt) { //gives players a canvas to draw an image on
+		draw.imageinput.startImage(prompt);
+		draw.displayUIElement(draw.imageinput,true);
+		addMouseListener(draw.imageinput);
+		while(draw.imageinput.getSubmission()==null) {
+			freeze(1);
+			draw.updateUIElement(draw.imageinput);
+			draw.repaint();
+		}
+		removeMouseListener(draw.imageinput);
+		draw.displayUIElement(draw.imageinput,false);
+		return draw.imageinput.getSubmission();
 	}
 	
 	public Recipe getRecipe(String useq, Player p) { //given sequence for unit, have player choose/make a recipe

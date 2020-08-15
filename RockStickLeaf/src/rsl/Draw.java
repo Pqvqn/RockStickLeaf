@@ -17,7 +17,8 @@ public class Draw extends JPanel{
 	public ArrayList<UIInventory> inventories;
 	public UICatalogue catalogue;
 	public UIMatch match;
-	public UITextInput textinput;
+	public UIInputType textinput;
+	public UIInputDraw imageinput;
 	
 	public Draw(Game g) {
 		super();

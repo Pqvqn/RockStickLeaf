@@ -9,7 +9,6 @@ public class UIImage extends UIElement{
 	private double wid,hei;
 	private Image img;
 	
-	
 	public UIImage(Game frame, int x, int y, double w, double h, Image i) { //image size as set w and h values
 		super(frame,x,y);
 		xPos = x;
@@ -27,6 +26,10 @@ public class UIImage extends UIElement{
 		hei = img.getHeight(null) * ratio;
 	}
 
+	public void setImg(Image i) {
+		img = i;
+	}
+	
 	public void paint(Graphics g) {
 		g.drawImage(img, xPos, yPos, (int)(.5+wid), (int)(.5+hei), null);
 	}
