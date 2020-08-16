@@ -1,10 +1,13 @@
 package rsl;
 
 import java.awt.*;
+import java.awt.image.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.List;
+
+import javax.imageio.*;
 import javax.swing.*;
 
 import ui.*;
@@ -96,8 +99,6 @@ public class Game extends JFrame{
 		String def = "";
 		for(DefaultUnit du : defaults)def+=", "+du.name;
 		draw.match.dispNotif("Defaults are: "+def.substring(2));
-		
-		getScreenDraw("do something");
 		
 		boolean doGame = true;
 		while(doGame) {
@@ -412,13 +413,13 @@ public class Game extends JFrame{
 	public Image getScreenDraw(String prompt) { //gives players a canvas to draw an image on
 		draw.imageinput.startImage(prompt);
 		draw.displayUIElement(draw.imageinput,true);
-		addMouseListener(draw.imageinput);
+		draw.addMouseListener(draw.imageinput);
 		while(draw.imageinput.getSubmission()==null) {
 			freeze(1);
 			draw.updateUIElement(draw.imageinput);
 			draw.repaint();
 		}
-		removeMouseListener(draw.imageinput);
+		draw.removeMouseListener(draw.imageinput);
 		draw.displayUIElement(draw.imageinput,false);
 		return draw.imageinput.getSubmission();
 	}
@@ -453,7 +454,7 @@ public class Game extends JFrame{
 			draw.match.setMenu(p, "Choose Recipe:",nums,strs, true);
 			try {
 				int ans = decode(retrieveSequence(p));
-				if(ans<=1) { //cancel crafting
+				if(ans<1) { //cancel crafting
 					return null;
 				}else if(ans==1) { //create new recipe
 					String r = "no";
@@ -649,9 +650,14 @@ public class Game extends JFrame{
 	
 	//returns unit's image file
 	public File unitImage(Unit u) throws IOException {
-		File ret = new File(filepath+"/unim/"+u.name+".png");
+		File ret = new File(filepath+"/unim/"+u.name+".png"); //get file
 		ret.getParentFile().mkdirs();
-		ret.createNewFile();
+		if(!ret.exists()) { //if no image already
+			ret.createNewFile();
+			BufferedImage i = (BufferedImage)getScreenDraw("Draw "+u.name); //ask player to draw image
+			ImageIO.write(i, "png", ret);
+		}
+
 		return ret;
 	}
 	

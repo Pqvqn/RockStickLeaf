@@ -22,8 +22,10 @@ public class UIUnit extends UIElement{
 		dirkeys = dirs;
 		quantity = quant;
 		size = sz;
+		
+		parts.add(new UIRectangle(game,xPos-size/4,yPos-3*size/5,size,size,Color.WHITE,true)); //image backing
 		try {
-			parts.add(new UIImage(game,xPos-size/4,yPos-3*size/5,size,size,ImageIO.read(unit.imgFile)));//image
+			parts.add(new UIImage(game,xPos-size/4,yPos-3*size/5,size,size,ImageIO.read(unit.imgFile),true));//image
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
