@@ -25,6 +25,7 @@ public class UIButton extends UIElement{
 
 	
 	public boolean highlighted() {return highlight;}
+	public String text() {return text.getText();}
 	
 	@Override
 	public void update() {
