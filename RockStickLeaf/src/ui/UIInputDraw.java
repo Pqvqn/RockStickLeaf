@@ -17,6 +17,7 @@ public class UIInputDraw extends UIElement implements MouseListener{
 	private Image submittedDrawing;
 	private int wid, hei;
 	private UIText penWid; //size of pen
+	private UIRectangle penCol; //color of pen
 	private int lastx, lasty; //last cursor x/y position
 	private ArrayList<UIButton> buttons;
 	
@@ -31,12 +32,19 @@ public class UIInputDraw extends UIElement implements MouseListener{
 		parts.add(disp = new UIImage(game,xPos-wid/2,yPos-wid/2,wid,hei,drawing,false));
 		parts.add(promptDisp = new UIText(game,xPos,yPos-4*hei/7,"",new Color(255,255,255,255),new Font("Arial",Font.ITALIC,20)));
 		parts.add(penWid = new UIText(game,xPos,yPos+180,"15",Color.BLACK,new Font("Arial",Font.BOLD,30)));
+		parts.add(penCol = new UIRectangle(game,xPos-50,yPos+245,100,30,Color.BLACK,true));
 		
 		//create all buttons
 		buttons = new ArrayList<UIButton>();
 		buttons.add(new UIButton(game,xPos,yPos-230,100,60,Color.BLACK,Color.YELLOW,"Submit",Color.WHITE,new Font("Arial",Font.BOLD,20))); //submit
 		buttons.add(new UIButton(game,xPos-wid/5,yPos+170,40,40,Color.BLACK,Color.YELLOW,"-",Color.WHITE,new Font("Arial",Font.BOLD,20))); //pen size down
 		buttons.add(new UIButton(game,xPos+wid/5,yPos+170,40,40,Color.BLACK,Color.YELLOW,"+",Color.WHITE,new Font("Arial",Font.BOLD,20))); //pen size up
+		buttons.add(new UIButton(game,xPos-wid/5,yPos+220,40,40,Color.BLACK,Color.YELLOW,"R+",Color.WHITE,new Font("Arial",Font.BOLD,20))); //pen color red up
+		buttons.add(new UIButton(game,xPos,yPos+220,40,40,Color.BLACK,Color.YELLOW,"G+",Color.WHITE,new Font("Arial",Font.BOLD,20))); //pen color green up
+		buttons.add(new UIButton(game,xPos+wid/5,yPos+220,40,40,Color.BLACK,Color.YELLOW,"B+",Color.WHITE,new Font("Arial",Font.BOLD,20))); //pen color blue up
+		buttons.add(new UIButton(game,xPos-wid/5,yPos+300,40,40,Color.BLACK,Color.YELLOW,"R-",Color.WHITE,new Font("Arial",Font.BOLD,20))); //pen color red down
+		buttons.add(new UIButton(game,xPos,yPos+300,40,40,Color.BLACK,Color.YELLOW,"G-",Color.WHITE,new Font("Arial",Font.BOLD,20))); //pen color green down
+		buttons.add(new UIButton(game,xPos+wid/5,yPos+300,40,40,Color.BLACK,Color.YELLOW,"B-",Color.WHITE,new Font("Arial",Font.BOLD,20))); //pen color blue down
 		
 		for(UIButton b : buttons)parts.add(b);
 		
@@ -61,10 +69,11 @@ public class UIInputDraw extends UIElement implements MouseListener{
 			Point b = MouseInfo.getPointerInfo().getLocation();
 			SwingUtilities.convertPointFromScreen(b, game.draw);
 			Graphics2D g2 = (Graphics2D)g;
-			g2.setColor(Color.black); //set color
+			g2.setColor(penCol.getColor()); //set color
 			int stroke = Integer.parseInt(penWid.getText());
 			g2.setStroke(new BasicStroke(stroke,BasicStroke.CAP_ROUND,BasicStroke.JOIN_MITER));
 			g2.drawLine(lastx-xPos+wid/2, lasty-yPos+hei/2, (int)(.5+b.getX())-xPos+wid/2, (int)(.5+b.getY())-yPos+hei/2); //draw from last position to current one
+			g2.setStroke(new BasicStroke());
 			disp.setImg(drawing); //display new image
 			if(lastx>=0 && lasty>=0) {
 				lastx = (int)(.5+b.getX()); //set new location
@@ -82,19 +91,37 @@ public class UIInputDraw extends UIElement implements MouseListener{
 	public void mouseClicked(MouseEvent arg0) {
 		for(int i=0; i<buttons.size(); i++) {
 			if(buttons.get(i).highlighted()){ //test all buttons to see if mouse is in area
+				Color color = penCol.getColor();
+				int stroke = Integer.parseInt(penWid.getText());
 				switch(buttons.get(i).text()) { //action based on button text
 				case "Submit": //submit image
 					submittedDrawing = drawing;
 					break;
 				case "-": //pen size down
-					int stroke = Integer.parseInt(penWid.getText());
 					if(stroke>1)
 						penWid.setText((stroke-1)+"");
 					break;
 				case "+": //pen size up
-					int stroke2 = Integer.parseInt(penWid.getText());
-					if(stroke2<50)
-						penWid.setText((stroke2+1)+"");
+					if(stroke<50)
+						penWid.setText((stroke+1)+"");
+					break;
+				case "R+": //pen color red up
+					penCol.setColor(new Color((color.getRed()+16)%256,color.getGreen()%256,color.getBlue()%256));
+					break;
+				case "R-": //pen color red down
+					penCol.setColor(new Color((color.getRed()+256-16)%256,color.getGreen()%256,color.getBlue()%256));
+					break;
+				case "G+": //pen color green up
+					penCol.setColor(new Color(color.getRed()%256,(color.getGreen()+16)%256,color.getBlue()%256));
+					break;
+				case "G-": //pen color green down
+					penCol.setColor(new Color(color.getRed()%256,(color.getGreen()+256-16)%256,color.getBlue()%256));
+					break;
+				case "B+": //pen color blue up
+					penCol.setColor(new Color(color.getRed()%256,color.getGreen()%256,(color.getBlue()+16)%256));
+					break;
+				case "B-": //pen color blue down
+					penCol.setColor(new Color(color.getRed()%256,color.getGreen()%256,(color.getBlue()+256-16)%256));
 					break;
 				}
 			}
