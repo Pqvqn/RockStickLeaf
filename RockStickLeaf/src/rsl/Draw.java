@@ -25,7 +25,7 @@ public class Draw extends JPanel{
 		game = g;
 		ui = new ArrayList<UIElement>();
 		inventories = new ArrayList<UIInventory>();
-		setPreferredSize(new Dimension(game.X_RESOL, game.Y_RESOL));
+		setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize());
 		setBackground(Color.GRAY);
 	}
 	public void update(Graphics g) {
@@ -64,6 +64,11 @@ public class Draw extends JPanel{
 	//draw all objects
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		//scale screen
+		Graphics2D g2 = (Graphics2D)g;
+		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+		g2.scale(screen.getWidth()/game.X_RESOL,screen.getHeight()/game.Y_RESOL);
+		
 		displayUIElement(inventories,true);
 		displayUIElement(match,true);
 		displayUIElement(catalogue,true);
