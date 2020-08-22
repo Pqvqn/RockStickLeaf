@@ -60,6 +60,12 @@ public class Draw extends JPanel{
 		}
 	}
 	
+	//converts point based on scaling
+	public Point convertPointFurther(Point b) {
+		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+		Point bb = new Point((int)(.5+b.x * (game.X_RESOL/screen.getWidth())),(int)(.5+b.y * (game.Y_RESOL/screen.getHeight())));
+		return bb;
+	}
 	
 	//draw all objects
 	public void paintComponent(Graphics g) {

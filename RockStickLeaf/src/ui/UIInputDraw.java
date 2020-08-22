@@ -69,8 +69,11 @@ public class UIInputDraw extends UIElement implements MouseListener{
 		promptDisp.center(xPos);
 		Graphics g = drawing.getGraphics();
 		if(lastx>=0 && lasty>=0) { //if pressed down
+			//get correct mouse location on draw
 			Point b = MouseInfo.getPointerInfo().getLocation();
 			SwingUtilities.convertPointFromScreen(b, game.draw);
+			b = game.draw.convertPointFurther(b);
+			
 			Graphics2D g2 = (Graphics2D)g;
 			g2.setColor(penCol.getColor()); //set color
 			int stroke = Integer.parseInt(penWid.getText());
@@ -152,8 +155,10 @@ public class UIInputDraw extends UIElement implements MouseListener{
 
 	@Override
 	public void mousePressed(MouseEvent arg0) {
-		lastx = arg0.getX();
-		lasty = arg0.getY();
+		Point b = new Point(arg0.getX(),arg0.getY());
+		b = game.draw.convertPointFurther(b);
+		lastx = b.x;
+		lasty = b.y;
 	}
 
 	@Override

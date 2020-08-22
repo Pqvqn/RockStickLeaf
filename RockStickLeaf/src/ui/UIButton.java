@@ -39,6 +39,7 @@ public class UIButton extends UIElement{
 		text.center(xPos);
 		Point b = MouseInfo.getPointerInfo().getLocation();
 		SwingUtilities.convertPointFromScreen(b, game.draw);
+		b = game.draw.convertPointFurther(b);
 		double x = b.getX();
 		double y = b.getY();
 		highlight = x>=backing.getxPos() && x<=backing.getxPos()+backing.getwLen() && y>=backing.getyPos() && y<=backing.getyPos()+backing.gethLen();
