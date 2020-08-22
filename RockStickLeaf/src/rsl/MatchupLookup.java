@@ -34,15 +34,18 @@ public class MatchupLookup {
 		while(seq == null) { //while no agreement between players on winner
 			for(int i=0; i<game.players.size(); i++) { //for each player, ask winner, proceed when there is a consensus
 				Player p = game.players.get(i);
-				int[] nums = new int[m.contenders().length]; //get all unit names/numbers for menu
-				String[] strs = new String[m.contenders().length];
-				for(int j=0; j<nums.length; j++) {
-					nums[j] = game.unitorder.indexOf(m.contenders()[j]);
-					strs[j] = m.contenders()[j].name;
+				int[] nums = new int[m.contenders().length+1]; //get all unit names/numbers for menu
+				String[] strs = new String[m.contenders().length+1];
+				nums[0] = -2;
+				strs[0] = "TIE";
+				for(int j=0; j<nums.length-1; j++) {
+					nums[j+1] = game.unitorder.indexOf(m.contenders()[j]);
+					strs[j+1] = m.contenders()[j].name;
 				}
 				game.draw.match.setMenu(p,"Winner of "+m+" is:",nums,strs,true);
 				p.isTurn = true;
 				String resp = game.retrieveSequence(p);
+				if(resp=="")resp = "tie";
 				p.isTurn = false;
 				if(seq==null) { //first ask
 					seq = resp;
@@ -55,17 +58,27 @@ public class MatchupLookup {
 			}
 			if(seq!=null) { //test if chosen sequence corresponds to a contender
 				boolean ok = false;
-				for(Unit u:m.contenders()) {
-					if(game.unitorder.get(game.decode(seq)).equals(u)) {
-						ok = true;
-					}
+				if(seq.equals("tie")) {
+					ok = true;
+				}else {
+					for(Unit u:m.contenders()) {
+						if(game.unitorder.get(game.decode(seq)).equals(u)) {
+							ok = true;
+						}
+					}	
 				}
 				if(!ok)seq = null;
 			}
 		}
-		Unit u = game.unitorder.get(game.decode(seq));
-		game.draw.match.dispNotif(u.name +" is victor of "+m);
-		addResult(m,u);
+		if(seq.equals("tie")) {
+			game.draw.match.dispNotif(m+" is a tie");
+			addResult(m,null);
+		}else {
+			Unit u = game.unitorder.get(game.decode(seq));
+			game.draw.match.dispNotif(u.name +" is victor of "+m);
+			addResult(m,u);
+		}
+
 	}
 	public void addResult(Matchup m, Unit victor) {
 		table.put(m,victor);
